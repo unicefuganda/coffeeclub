@@ -1,0 +1,22 @@
+[submodule "coffeeclub_project/rapidsms"]
+	path = coffeeclub_project/rapidsms
+	url = git@github.com:unicefuganda/rapidsms.git
+[submodule "coffeeclub_project/rapidsms_httprouter"]
+	path = coffeeclub_project/rapidsms_httprouter
+	url = git@github.com:unicefuganda/rapidsms-httprouter.git
+[submodule "coffeeclub_project/rapidsms_script"]
+	path = coffeeclub_project/rapidsms_script
+	url = git@github.com:unicefuganda/rapidsms-script.git
+[submodule "coffeeclub_project/rapidsms_contact"]
+	path = coffeeclub_project/rapidsms_contact
+	url = git@github.com:unicefuganda/rapidsms-contact.git
+[submodule "coffeeclub_project/rapidsms_polls"]
+	path = coffeeclub_project/rapidsms_polls
+	url = git@github.com:unicefuganda/rapidsms-polls.git
+[submodule "coffeeclub_project/rapidsms_generic"]
+	path = coffeeclub_project/rapidsms_generic
+	url = git@github.com:unicefuganda/rapidsms-generic.git
+
+[submodule "coffeeclub_project/rapidsms_auth"]
+	path = coffeeclub_project/rapidsms_auth
+	url = git@github.com:unicefuganda/rapidsms-auth.git
