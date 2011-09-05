@@ -14,12 +14,13 @@ sys.path.append(os.path.join(filedir))
 sys.path.append(os.path.join(filedir, 'rapidsms', 'lib'))
 sys.path.append(os.path.join(filedir, 'rapidsms_contact'))
 sys.path.append(os.path.join(filedir, 'rapidsms_generic'))
-sys.path.append(os.path.join(filedir, 'rapidsms_httprouter'))
+sys.path.append(os.path.join(filedir, 'rapidsms_httprouter_src'))
 sys.path.append(os.path.join(filedir, 'rapidsms_polls'))
 sys.path.append(os.path.join(filedir, 'rapidsms_script'))
 sys.path.append(os.path.join(filedir, 'rapidsms_uganda_common'))
 sys.path.append(os.path.join(filedir, 'coffeeclubapp'))
 sys.path.append(os.path.join(filedir, 'rapidsms_status160'))
+sys.path.append(os.path.join(filedir, 'django_eav'))
 # you should configure your database here before doing any real work.
 # see: http://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
@@ -69,11 +70,11 @@ INSTALLED_APPS = [
     "generic",
     "contact",
     "script",
-    "tracking",
     "uganda_common",
     "rapidsms",
     "coffeeclubapp",
-    "rapidsms_status160"
+    "status160",
+     "eav",
 
 ]
 

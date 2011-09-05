@@ -22,3 +22,9 @@
 [submodule "coffeeclub_project/rapidsms_httprouter_src"]
 	path = coffeeclub_project/rapidsms_httprouter_src
 	url = git@github.com:unicefuganda/rapidsms-httprouter.git
+[submodule "coffeeclub_project/rapidsms_uganda_common"]
+	path = coffeeclub_project/rapidsms_uganda_common
+	url = git@github.com:unicefuganda/rapidsms-uganda-common.git
+[submodule "coffeeclub_project/django_eav"]
+	path = coffeeclub_project/django_eav
+	url = git@github.com:unicefuganda/django-eav.git
