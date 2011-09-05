@@ -72,7 +72,8 @@ INSTALLED_APPS = [
     "tracking",
     "uganda_common",
     "rapidsms",
-    "coffeeclubapp"
+    "coffeeclubapp",
+    "rapidsms_status160"
 
 ]
 
