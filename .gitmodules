@@ -20,3 +20,6 @@
 [submodule "coffeeclub_project/rapidsms_auth"]
 	path = coffeeclub_project/rapidsms_auth
 	url = git@github.com:unicefuganda/rapidsms-auth.git
+[submodule "coffeeclub_project/rapidsms_status160"]
+	path = coffeeclub_project/rapidsms_status160
+	url = git://github.com/unicefuganda/rapidsms-status160.git
