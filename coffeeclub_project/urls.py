@@ -2,13 +2,13 @@ from django.conf.urls.defaults import *
 from coffeeclubapp.views import dashboard
 from rapidsms_httprouter.urls import urlpatterns as router_urls
 from django.conf import settings
-
-
 from generic.urls import urlpatterns as generic_urls
+from rapidsms_httprouter.router import get_router
+get_router()
 
 urlpatterns = patterns('',
 
-        url(r'^$', dashboard ,name="coffee-dashboard"),
+        url(r'^$', dashboard , name="coffee-dashboard"),
         (r'^account/', include('rapidsms.urls.login_logout')),
             url('^accounts/login', 'rapidsms.views.login'),
             url('^accounts/logout', 'rapidsms.views.logout'),
@@ -21,7 +21,7 @@ urlpatterns = patterns('',
             (r'^registration/', include('auth.urls')),
             (r'^scheduler/', include('rapidsms.contrib.scheduler.urls')),
             (r'^polls/', include('poll.urls')),
-        ) + router_urls  + generic_urls
+        ) + router_urls + generic_urls
 
 
 if settings.DEBUG:
@@ -31,6 +31,3 @@ if settings.DEBUG:
         # production)
         (r'^', include('rapidsms.urls.static_media')),
     )
-
-from rapidsms_httprouter.router import get_router
-get_router()
