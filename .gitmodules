@@ -28,3 +28,6 @@
 [submodule "coffeeclub_project/django_eav"]
 	path = coffeeclub_project/django_eav
 	url = git@github.com:unicefuganda/django-eav.git
+[submodule "coffeeclub_project/coffeeclubapp/static/stylesheets/bootstrap"]
+	path = coffeeclub_project/coffeeclubapp/static/stylesheets/bootstrap
+	url = git://github.com/twitter/bootstrap.git
