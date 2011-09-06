@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import *
 from coffeeclubapp.views import dashboard
 from rapidsms_httprouter.urls import urlpatterns as router_urls
+from auth.urls import
 from django.conf import settings
 
 
@@ -21,7 +22,7 @@ urlpatterns = patterns('',
             (r'^registration/', include('auth.urls')),
             (r'^scheduler/', include('rapidsms.contrib.scheduler.urls')),
             (r'^polls/', include('poll.urls')),
-        ) + router_urls  + generic_urls
+        ) + router_urls  + generic_urls +auth_urls
 
 
 if settings.DEBUG:

@@ -52,7 +52,7 @@ INSTALLED_BACKENDS = {
 # to help you get started quickly, many django/rapidsms apps are enabled
 # by default. you may wish to remove some and/or add your own.
 INSTALLED_APPS = [
-     "coffeeclubapp",
+
     "djtables",
     "mptt",
     "uni_form",
@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "rapidsms",
     "status160",
      "eav",
+    "coffeeclubapp",
 ]
 
 SMS_APPS = [
