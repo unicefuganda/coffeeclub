@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Coffee Club {% block page_title %}{% endblock %}</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"/>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"/>
+</head>
+<body>
+
+<header>
+    <nav>
+        <!--TODO: design a sweet home page-->
+        <li><a href="#">Home</a></li>
+        <!-- TODO: work on Accounts views and registration system-->
+        <li><a href="#">Accounts</a></li>
+        <!-- TODO: work on login and logout-->
+        <li><a href="#">Login/logout</a></li>
+    </nav>
+</header>
+<section class="content">
+    {% block content %}
+    {% endblock %}
+</section>
+
+<footer>
+    <nav>
+        <ul>
+            <li><a href="#">About</a></li>
+        </ul>
+    </nav>
+</footer>
+
+
+</body>
+</html>

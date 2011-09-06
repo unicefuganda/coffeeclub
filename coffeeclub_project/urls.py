@@ -6,5 +6,4 @@ from coffeeclubapp.views import dashboard
 
 urlpatterns = patterns('',
       (r'^$', dashboard),
-
 )
