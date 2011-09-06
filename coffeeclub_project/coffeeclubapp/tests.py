@@ -6,14 +6,14 @@ Replace these with more appropriate tests for your application.
 """
 
 
-from django.utils import unittest
+#from django.utils import unittest
 
 from django.test import TestCase
-from coffeeclub_project.coffeeclubapp.models import MenuItem
+from coffeeclubapp.models import MenuItem
 
-class MenuItemTestCase(unittest.TestCase):
+class MenuItemTestCase(TestCase):
     def setUp(self):
-        self.menu_item = MenuItem.objects.create(name="capuccino",cost=2500)
+        self.menu_item = MenuItem.objects.create(name="capuccino", cost=2500)
     def testOrder(self):
         self.assertEqual(self.menu_item.set)
 

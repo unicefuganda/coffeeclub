@@ -22,6 +22,7 @@ sys.path.append(os.path.join(filedir, 'coffeeclubapp'))
 sys.path.append(os.path.join(filedir, 'rapidsms_status160'))
 sys.path.append(os.path.join(filedir, 'django_eav'))
 sys.path.append(os.path.join(filedir, 'rapidsms_auth'))
+sys.path.append(os.path.join(filedir, 'rapidsms_xforms'))
 # you should configure your database here before doing any real work.
 # see: http://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
@@ -60,7 +61,7 @@ INSTALLED_APPS = [
     "uni_form",
     "django_extensions",
     "rapidsms.contrib.handlers",
-    "django.contrib.sites",
+#    "django.contrib.sites",
     "django.contrib.auth",
     "django.contrib.admin",
     "django.contrib.sessions",
@@ -69,6 +70,7 @@ INSTALLED_APPS = [
     "rapidsms.contrib.default",
     "rapidsms.contrib.messaging",
     "rapidsms_httprouter",
+    "rapidsms_xforms",
     "poll",
     "generic",
     "contact",
@@ -116,7 +118,7 @@ TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 # for some reason this setting is blank in django's global_settings.py,
 # but it is needed for static assets to be linkable.
 MEDIA_URL = "/static/"
-ADMIN_MEDIA_PREFIX="/static/media/"
+ADMIN_MEDIA_PREFIX = "/static/media/"
 # this is required for the django.contrib.sites tests to run, but also
 # not included in global_settings.py, and is almost always ``1``.
 # see: http://docs.djangoproject.com/en/dev/ref/contrib/sites/
