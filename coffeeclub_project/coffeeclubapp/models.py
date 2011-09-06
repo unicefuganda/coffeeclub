@@ -1,8 +1,7 @@
 from django.db import models
-try:
-    from rapidsms.models import Contact
-except:
-    Contact=type('Contact',(models.Model,),{'__module__':'coffeeclubapp.models','app_label':'','fields':None})
+from django.db.models.signals import class_prepared
+from rapidsms.models import Contact
+
 
 class MenuItem(models.Model):
     name=models.CharField(max_length=50,blank=True)
@@ -22,14 +21,25 @@ class CustomerPref(models.Model):
 
 class Order(models.Model):
     date=models.DateTimeField()
-    customer=models.ForeignKey(Contact)
+    customer=models.ForeignKey(Contact,related_name="order")
     item=models.ForeignKey(MenuItem)
     count=models.IntegerField(max_length=2)
 
 
 class Account(models.Model):
-    customer=models.ForeignKey(Contact)
-    amount=models.IntegerField(max_length=10)
+    owner=models.ForeignKey(Contact,related_name="account")
+    balance=models.IntegerField(max_length=10)
+    date_updated=models.DateTimeField(auto_now=True)
+
+#add preferencies to the contact class
+def alter_contacts(sender, **kwargs):
+    if sender.__module__ == 'rapidsms.models' and sender.__name__ == 'Contact':
+        preferences = models.ForeignKey(CustomerPref, blank=True, null=True)
+        order.contribute_to_class(sender, 'order')
+
+class_prepared.connect(alter_contacts)
+
+
 
 
 
