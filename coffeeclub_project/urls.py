@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 from coffeeclubapp.views import dashboard
 from rapidsms_httprouter.urls import urlpatterns as router_urls
 from django.conf import settings
+
 from django.contrib import admin
 admin.autodiscover()
 
@@ -13,7 +14,9 @@ urlpatterns = patterns('',
         url(r'^account/', include('rapidsms.urls.login_logout')),
         url('^accounts/login', 'rapidsms.views.login'),
         url('^accounts/logout', 'rapidsms.views.logout'),
+
         url(r'^admin/',include(admin.site.urls)),
+        
         # RapidSMS contrib app URLs
         (r'^ajax/', include('rapidsms.contrib.ajax.urls')),
             (r'^export/', include('rapidsms.contrib.export.urls')),

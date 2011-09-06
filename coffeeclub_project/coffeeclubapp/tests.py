@@ -5,7 +5,18 @@ unittest). These will both pass when you run "manage.py test".
 Replace these with more appropriate tests for your application.
 """
 
+
+from django.utils import unittest
+
 from django.test import TestCase
+from coffeeclub_project.coffeeclubapp.models import MenuItem
+
+class MenuItemTestCase(unittest.TestCase):
+    def setUp(self):
+        self.menu_item = MenuItem.objects.create(name="capuccino",cost=2500)
+    def testOrder(self):
+        self.assertEqual(self.menu_item.set)
+
 
 class SimpleTest(TestCase):
     def test_basic_addition(self):
