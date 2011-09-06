@@ -68,6 +68,8 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     # the rapidsms contrib apps.
     "rapidsms.contrib.default",
+     "rapidsms.contrib.locations",
+    "rapidsms.contrib.locations.nested",
     "rapidsms.contrib.messaging",
     "rapidsms_httprouter",
     "rapidsms_xforms",
