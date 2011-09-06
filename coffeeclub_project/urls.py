@@ -5,5 +5,6 @@ from coffeeclubapp.views import dashboard
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-      (r'^$', dashboard),
+
+                        url(r'^$', dashboard ,name="coffee-dashboard"),
 )
