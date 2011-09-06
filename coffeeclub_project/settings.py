@@ -52,6 +52,7 @@ INSTALLED_BACKENDS = {
 # to help you get started quickly, many django/rapidsms apps are enabled
 # by default. you may wish to remove some and/or add your own.
 INSTALLED_APPS = [
+     "coffeeclubapp",
     "djtables",
     "mptt",
     "uni_form",
@@ -72,7 +73,6 @@ INSTALLED_APPS = [
     "script",
     "uganda_common",
     "rapidsms",
-    "coffeeclubapp",
     "status160",
      "eav",
 
@@ -84,6 +84,12 @@ SMS_APPS = [
 ]
 
 
+# this rapidsms-specific setting defines which views are linked by the
+# tabbed navigation. when adding an app to INSTALLED_APPS, you may wish
+# to add it here, also, to expose it in the rapidsms ui.
+RAPIDSMS_TABS = [
+     ("coffee-dashboard", "Dashboard"),
+]
 # -------------------------------------------------------------------- #
 #                         BORING CONFIGURATION                         #
 # -------------------------------------------------------------------- #
