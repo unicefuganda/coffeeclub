@@ -71,8 +71,8 @@ INSTALLED_APPS = [
     "contact",
     "script",
     "uganda_common",
-    "rapidsms",
     "coffeeclubapp",
+    "rapidsms",
     "status160",
      "eav",
 
