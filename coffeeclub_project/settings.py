@@ -21,6 +21,7 @@ sys.path.append(os.path.join(filedir, 'rapidsms_uganda_common'))
 sys.path.append(os.path.join(filedir, 'coffeeclubapp'))
 sys.path.append(os.path.join(filedir, 'rapidsms_status160'))
 sys.path.append(os.path.join(filedir, 'django_eav'))
+sys.path.append(os.path.join(filedir, 'rapidsms_auth'))
 # you should configure your database here before doing any real work.
 # see: http://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
      "coffeeclubapp",
     "djtables",
     "mptt",
+    "auth",
     "uni_form",
     "django_extensions",
     "rapidsms.contrib.handlers",
@@ -75,6 +77,7 @@ INSTALLED_APPS = [
     "rapidsms",
     "status160",
      "eav",
+
 ]
 
 SMS_APPS = [

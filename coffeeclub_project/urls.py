@@ -26,7 +26,7 @@ urlpatterns = patterns('',
             (r'^registration/', include('auth.urls')),
             (r'^scheduler/', include('rapidsms.contrib.scheduler.urls')),
             (r'^polls/', include('poll.urls')),
-        ) + router_urls  + generic_urls
+        ) + router_urls  + generic_urls 
 
 
 if settings.DEBUG:
