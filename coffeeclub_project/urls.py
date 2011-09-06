@@ -3,18 +3,20 @@ from coffeeclubapp.views import dashboard
 from rapidsms_httprouter.urls import urlpatterns as router_urls
 from auth.urls import
 from django.conf import settings
-
+from django.contrib import admin
+admin.autodiscover()
 
 from generic.urls import urlpatterns as generic_urls
 
 urlpatterns = patterns('',
 
         url(r'^$', dashboard ,name="coffee-dashboard"),
-        (r'^account/', include('rapidsms.urls.login_logout')),
-            url('^accounts/login', 'rapidsms.views.login'),
-            url('^accounts/logout', 'rapidsms.views.logout'),
-            # RapidSMS contrib app URLs
-            (r'^ajax/', include('rapidsms.contrib.ajax.urls')),
+        url(r'^account/', include('rapidsms.urls.login_logout')),
+        url('^accounts/login', 'rapidsms.views.login'),
+        url('^accounts/logout', 'rapidsms.views.logout'),
+        url(r'^admin/',include(admin.site.urls)),
+        # RapidSMS contrib app URLs
+        (r'^ajax/', include('rapidsms.contrib.ajax.urls')),
             (r'^export/', include('rapidsms.contrib.export.urls')),
             (r'^httptester/', include('rapidsms.contrib.httptester.urls')),
             (r'^messagelog/', include('rapidsms.contrib.messagelog.urls')),
