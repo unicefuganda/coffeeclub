@@ -43,4 +43,3 @@ class_prepared.connect(alter_contacts)
 
 
 
-
