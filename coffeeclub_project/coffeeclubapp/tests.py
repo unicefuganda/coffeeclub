@@ -148,7 +148,7 @@ class ModelTest(TestCase): #pragma: no cover
         self.assertEquals(prefs.notes, 'Add Some Sugar')
         self.assertEquals(Account.objects.all()[0].owner, contact)
 
-    def testBasicCoffeeOrder(self):
+    def testCoffeeOrder(self):
 
         self.fake_incoming('join')
         self.assertEquals(ScriptProgress.objects.count(), 1)
@@ -172,14 +172,19 @@ class ModelTest(TestCase): #pragma: no cover
         coffee_order = CoffeeOrder.objects.order_by('-date').filter(customer=contact)[0]
         self.assertEquals(coffee_order.num_cups, 2)
         self.assertEquals(coffee_order.coffee_name, self.expresso)
+        self.assertEquals(Message.objects.all().order_by('-date')[0].text, "2 cup(s) of Expresso coming up shortly! We will deliver to T4D 2nd Floor")
 
         self.fake_incoming('coffee')
         coffee_order = CoffeeOrder.objects.order_by('-date').filter(customer=contact)[0]
         self.assertEquals(coffee_order.num_cups, 1)
 
-        self.fake_incoming('coffee 2 Western Conference Room')
+        self.fake_incoming('coffee 2 location Western Conference Room')
         coffee_order = CoffeeOrder.objects.order_by('-date').filter(customer=contact)[0]
         self.assertEquals(coffee_order.num_cups, 2)
-        self.assertEquals(coffee_order.deliver_to, 'Western Conference Room')
+        self.assertEquals(Message.objects.all().order_by('-date')[0].text, "2 cup(s) of Expresso coming up shortly! We will deliver to " + coffee_order.deliver_to)
+
+        self.fake_incoming('coffee location Western Conference Room type cappucino')
+        coffee_order = CoffeeOrder.objects.order_by('-date').filter(customer=contact)[0]
+        self.assertEquals(Message.objects.all().order_by('-date')[0].text, str(coffee_order.num_cups) + " cup(s) of " + self.cappuccino.name + " coming up shortly! We will deliver to " + coffee_order.deliver_to)
 
 

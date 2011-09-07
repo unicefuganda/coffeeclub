@@ -124,10 +124,10 @@ def xform_received_handler(sender, **kwargs):
             coffee_name = find_closest_match(submission.eav.coffee_type, MenuItem.objects)
         else:
             coffee_name = customer.preferences.standard_drink
-        if submission.eav.location:
-            deliver_to = submission.eav.location
+        if submission.eav.coffee_location:
+            deliver_to = submission.eav.coffee_location
         else:
-            deliver_to = contact.groups.all()[0].name + contact.groups.all()[0].floor
+            deliver_to = contact.groups.all()[0].name + ' ' + Department.objects.get(pk=contact.groups.all()[0].pk).floor
 
         num_cups = submission.eav.coffee_cups if submission.eav.coffee_cups else 1
 
@@ -138,7 +138,8 @@ def xform_received_handler(sender, **kwargs):
             num_cups=num_cups, \
             deliver_to=deliver_to, \
             )
-
+        submission.response = str(num_cups) + ' cup(s) of ' + coffee_name.name + ' coming up shortly! We will deliver to ' + deliver_to
+        submission.save()
 script_progress_was_completed.connect(coffee_autoreg, weak=False)
 xform_received.connect(xform_received_handler, weak=False)
 
