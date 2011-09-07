@@ -3,6 +3,7 @@ Basic tests for coffeeclub app
 """
 from django.test import TestCase
 from django.contrib.auth.models import User, Group
+from django.contrib.sites.models import Site
 from rapidsms.messages.incoming import IncomingMessage
 from rapidsms_xforms.models import *
 from rapidsms_httprouter.models import Message
