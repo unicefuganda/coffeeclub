@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.forms import ModelForm
-from coffeeclubapp.models import *
+from .models import *
 from django import forms
 
 class OrderForm(ModelForm):
@@ -12,6 +12,8 @@ class OrderForm(ModelForm):
 
     class Meta:
         model=Order
+
+
 def dashboard(request):
     order_form=OrderForm()
     customers=Customer.objects.order_by('-name')
