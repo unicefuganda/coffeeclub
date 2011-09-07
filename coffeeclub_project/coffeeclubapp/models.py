@@ -24,19 +24,19 @@ class CustomerPref(models.Model):
 
 class Customer(Contact):
     preferences = models.ForeignKey(CustomerPref, related_name='preferences', null=True)
-    extension = models.CharField(max_length=30)
-    email = models.EmailField()
+    extension = models.CharField(max_length=30,null=True,blank=True)
+    email = models.EmailField(blank=True,null=True)
 
 class Order(models.Model):
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now=True)
     customer = models.ForeignKey(Customer, related_name="order")
     item = models.ForeignKey(MenuItem)
-    count = models.IntegerField(max_length=2)
+    count = models.IntegerField(max_length=2,default=1)
 
 
 class Account(models.Model):
     owner = models.ForeignKey(Customer, related_name="account")
-    balance = models.IntegerField(max_length=10)
+    balance = models.IntegerField(max_length=10,blank=True,null=True)
     date_updated = models.DateTimeField(auto_now=True)
 
 
@@ -98,9 +98,9 @@ def coffee_autoreg(**kwargs):
     contact.preferences = prefs
     contact.save()
 
-#    
 #
-#    
+#
+#
 #
 #
 #    subcounty = find_best_response(session, subcounty_poll)

@@ -4,17 +4,20 @@
     Dashboard
 {% endblock %}
 {% block content %}
-<div class="row">
-    <div class="span8 columns">
-        <div class="page-header">
-            <h2>Daily Coffee Order</h2>
+    <div class="row">
+        <div class="span8 columns">
+            <div class="page-header">
+                <h2>Daily Coffee Order</h2>
+            </div>
+
+            <form action="/" method="Post">
+                {{ order_form }}
+
+                </br>
+                <input type="submit" value="Save Order">
+            </form>
+
         </div>
-
-        <form>
-            Forms go here...
-        </form>
-
-    </div>
         <div class="span8 columns">
             <div class="page-header">
                 <h2>Reports</h2>
@@ -24,5 +27,5 @@
                 </div>
             </div>
         </div>
-</div>
+    </div>
 {% endblock %}

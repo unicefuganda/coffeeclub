@@ -10,12 +10,21 @@
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}coffeeclubapp/stylesheets/coffeeapp.css">
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}coffeeclubapp/stylesheets/bootstrap/bootstrap-1.2.0.min.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}coffeeclubapp/stylesheets/jquery_ui/jquery-ui.css">
+
 
 {% endblock %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="/static/rapidsms/javascripts/jquery-1.3.2.min.js"></script>
-    <script type="text/javascript" src="/static/rapidsms/javascripts/collapse.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}coffeeclubapp/javascripts/jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}rapidsms/javascripts/collapse.js"></script>
+     <script type="text/javascript" src="{{ MEDIA_URL }}coffeeclubapp/javascripts/jquery-ui.js"></script>
+    <script type ="text/Javascript">
+        $(function() {
+  $(".autocomplete").combobox();
+         
+});
+    </script>
 {% endblock %}
 </head>
 	<body>
