@@ -111,6 +111,10 @@ class ModelTest(TestCase): #pragma: no cover
         self.department = Department.objects.create(pk=grp.pk)
         self.department.floor = '2nd Floor'
         self.department.save()
+        grp.floor = '2nd Floor'
+        grp.save()
+        self.expresso = MenuItem.objects.create(name='Expresso', cost=2500)
+        self.cappuccino = MenuItem.objects.create(name='Capuccino', cost=2500)
 
     def testBasicAutoReg(self):
         self.fake_incoming('join')
@@ -132,8 +136,14 @@ class ModelTest(TestCase): #pragma: no cover
         self.assertEquals(Customer.objects.count(), 1)
         contact = Customer.objects.all()[0]
         self.assertEquals(contact.name, 'Moses Mugisha')
-#        self.assertEquals(contact.preferences.all()[0].extension, 1760)
+        self.assertEquals(contact.groups.all()[0].name, 'T4D')
+        self.assertEquals(Department.objects.get(pk=contact.groups.all()[0].pk).floor, '2nd Floor')
+        self.assertEquals(contact.extension, '1760')
+        self.assertEquals(contact.email, 'mossplix@yahoo.com')
+        prefs = contact.preferences
+        self.assertEquals(prefs.standard_drink.name, 'Expresso')
+        self.assertEquals(prefs.milk_type, 'Cow Milk')
 #        self.assertEquals(contact.running_order, True)
 #        self.assertEquals(contact.days_on_call, 'Mon:Tue:Wed:Thur')
-#        self.assertEquals(contact.groups.all()[0].name, 'T4D')
+#        
 

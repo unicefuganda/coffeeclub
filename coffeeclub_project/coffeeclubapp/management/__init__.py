@@ -147,7 +147,7 @@ def init_autoreg(sender, **kwargs):
         ))
         extension_poll = Poll.objects.create(
             user=user, \
-            type=Poll.TYPE_NUMERIC, \
+            type=Poll.TYPE_TEXT, \
             name='coffee_extension',
             question='What is your office telephone extension number?', \
             default_response='', \
