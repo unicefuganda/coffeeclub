@@ -5,6 +5,9 @@ from django.contrib.auth.models import Group
 from script.signals import script_progress_was_completed
 from script.models import ScriptSession
 from script.utils.handling import find_closest_match, find_best_response
+from poll.models import YES_WORDS
+from rapidsms_xforms.models import XFormField, XForm, XFormSubmission, dl_distance, xform_received
+import datetime
 
 class Department(Group):
     floor = models.CharField(max_length=15, blank=True)
@@ -27,16 +30,17 @@ class Customer(Contact):
     extension = models.CharField(max_length=30)
     email = models.EmailField()
 
-class Order(models.Model):
+class CoffeeOrder(models.Model):
     date = models.DateTimeField()
     customer = models.ForeignKey(Customer, related_name="order")
-    item = models.ForeignKey(MenuItem)
-    count = models.IntegerField(max_length=2)
+    coffee_name = models.ForeignKey(MenuItem, blank=True, null=True)
+    num_cups = models.IntegerField(max_length=2)
+    deliver_to = models.CharField(max_length=100, blank=True, null=True)
 
 
 class Account(models.Model):
     owner = models.ForeignKey(Customer, related_name="account")
-    balance = models.IntegerField(max_length=10)
+    balance = models.IntegerField(max_length=10, default=0)
     date_updated = models.DateTimeField(auto_now=True)
 
 
@@ -62,7 +66,7 @@ def coffee_autoreg(**kwargs):
 
     if not connection.contact:
             connection.contact = Customer.objects.create()
-            connection.save
+            connection.save()
     contact = connection.contact
 
     name = find_best_response(session, name_poll)
@@ -93,62 +97,51 @@ def coffee_autoreg(**kwargs):
         milktype = ' '.join([n.capitalize() for n in milktype.lower().split(' ')])
         prefs.milk_type = milktype
 
+    own_cup = find_best_response(session, own_cup_poll)
+    if own_cup and own_cup in YES_WORDS:
+        prefs.own_cup = True
+
+    notes = find_best_response(session, other_notes_poll)
+    if notes:
+        notes = ' '.join([n.capitalize() for n in notes.lower().split(' ')])
+        prefs.notes = notes
+
 
     prefs.save()
     contact.preferences = prefs
     contact.save()
 
-#    
-#
-#    
-#
-#
-#    subcounty = find_best_response(session, subcounty_poll)
-#    district = find_best_response(session, district_poll)
-#
-#    if subcounty:
-#        subcounty = find_closest_match(subcounty, Location.objects.filter(type__name='sub_county'))
-#
-#    if subcounty:
-#        contact.reporting_location = subcounty
-#    elif district:
-#        contact.reporting_location = district
-#    else:
-#        contact.reporting_location = Location.tree.root_nodes()[0]
-#
-#    name = find_best_response(session, name_poll)
-#    if name:
-#        name = ' '.join([n.capitalize() for n in name.lower().split(' ')])
-#        contact.name = name[:100]
-#
-#    if not contact.name:
-#        contact.name = 'Anonymous User'
-#    contact.save()
-#
-#    reporting_school = None
-#    school = find_best_response(session, school_poll)
-#    if school:
-#        if subcounty:
-#            reporting_school = find_closest_match(school, School.objects.filter(location__name__in=[subcounty], \
-#                                                                                location__type__name='sub_county'), True)
-#        elif district:
-#            reporting_school = find_closest_match(school, School.objects.filter(location__name__in=[district.name], \
-#                                                                            location__type__name='district'), True)
-#        else:
-#            reporting_school = find_closest_match(school, School.objects.filter(location__name=Location.tree.root_nodes()[0].name))
-#        contact.school = reporting_school
-#        contact.save()
+    Account.objects.create(owner=contact)
 
-#add preferencies to the contact class
-#def alter_contacts(sender, **kwargs):
-#    if sender.__module__ == 'rapidsms.models' and sender.__name__ == 'Contact':
-#        preferences = models.ForeignKey(CustomerPref, blank=True, null=True)
-#        order.contribute_to_class(sender, 'order')
-#
-#class_prepared.connect(alter_contacts)
+def xform_received_handler(sender, **kwargs):
+    xform = kwargs['xform']
+    submission = kwargs['submission']
+    contact = Contact.objects.get(pk=kwargs['message'].connection.contact_id)
 
+    if xform.keyword == 'coffee':
+        date = datetime.datetime.now()
+        customer = Customer.objects.filter(pk=contact.pk)[0]
+        if submission.eav.coffee_type:
+            coffee_name = find_closest_match(submission.eav.coffee_type, MenuItem.objects)
+        else:
+            coffee_name = customer.preferences.standard_drink
+        if submission.eav.location:
+            deliver_to = submission.eav.location
+        else:
+            deliver_to = contact.groups.all()[0].name + contact.groups.all()[0].floor
+
+        num_cups = submission.eav.coffee_cups if submission.eav.coffee_cups else 1
+
+        CoffeeOrder.objects.create(\
+            date=date, \
+            customer=customer, \
+            coffee_name=coffee_name, \
+            num_cups=num_cups, \
+            deliver_to=deliver_to, \
+            )
 
 script_progress_was_completed.connect(coffee_autoreg, weak=False)
+xform_received.connect(xform_received_handler, weak=False)
 
 
 
