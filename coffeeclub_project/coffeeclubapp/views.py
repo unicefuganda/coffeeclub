@@ -20,9 +20,8 @@ def dashboard(request):
         order_form=OrderForm(request.POST)
         if order_form.is_valid():
             order_form.save()
-    return render_to_response('coffeeclubapp/dashboard.html',{'order_form':order_form,'customers':customers},
+    return render_to_response('coffeeclubapp/dashboard.html',{'order_form':order_form},
     context_instance=RequestContext(request))
 
 def cutomer_detail(request):
     return render_to_response('coffeeclubapp/customer_detail.html',context_instance=RequestContext(request))
-
