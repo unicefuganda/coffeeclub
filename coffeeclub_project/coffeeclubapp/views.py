@@ -14,7 +14,10 @@ class OrderForm(ModelForm):
         model=Order
 def dashboard(request):
     order_form=OrderForm()
-    customers=Customer.objects.order_by('-name')
+    if request.method=='POST':
+        order_form=OrderForm(request.POST)
+        if order_form.is_valid():
+            order_form.save()
     return render_to_response('coffeeclubapp/dashboard.html',{'order_form':order_form,'customers':customers},
     context_instance=RequestContext(request))
 
