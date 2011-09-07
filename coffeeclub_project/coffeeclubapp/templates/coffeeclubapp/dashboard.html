@@ -4,25 +4,28 @@
     Dashboard
 {% endblock %}
 {% block content %}
-<div class="row">
-    <div class="span8 columns">
-        <div class="page-header">
-            <h2>Daily Coffee Order</h2>
+    <div class="row">
+        <div class="span8 columns">
+            <div class="page-header">
+                <h2>Daily Coffee Order</h2>
+            </div>
+<table>
+            <form action="/" method="Post">
+                {{ order_form.as_table}}
+
+                </br>
+            <tr> <td></td><td><input type="submit" value="Save Order"></td></tr>   
+            </form>
+</table>
         </div>
-
-        <form>
-            Forms go here...
-        </form>
-
-    </div>
         <div class="span8 columns">
             <div class="page-header">
                 <h2>Reports</h2>
 
                 <div class="actions">
-                    Buttons go here...
+                    <button class="primary">Add Customers (Excel)</button>
                 </div>
             </div>
         </div>
-</div>
+    </div>
 {% endblock %}

@@ -4,7 +4,7 @@ from rapidsms_httprouter.urls import urlpatterns as router_urls
 from django.conf import settings
 from generic.views import generic, generic_row
 from generic.sorters import SimpleSorter
-from rapidsms.models import Contact
+from coffeeclubapp.models import Customer
 
 from django.contrib import admin
 admin.autodiscover()
@@ -30,14 +30,15 @@ urlpatterns = patterns('',
         (r'^scheduler/', include('rapidsms.contrib.scheduler.urls')),
         (r'^polls/', include('poll.urls')),
         url(r'^customers/$', generic, {
-        'model':Contact,
+        'model':Customer,
+        'queryset':Customer.objects.all(),
         'results_title':'All Customers',
         'filter_forms':[],
         'action_forms':[],
         'objects_per_page':10,
         'partial_row':'coffeeclubapp/partials/customer_row.html',
         'partial_header':'coffeeclubapp/partials/partial_header_dashboard.html',
-        'base_template':'coffeeclubapp/dashboard.html',
+        'base_template':'coffeeclubapp/customers.html',
         'selectable':False,
         'columns':[('Name', True, 'name', SimpleSorter()),
                  ('Extension', True, 'extension', SimpleSorter(),),

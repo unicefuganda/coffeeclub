@@ -27,8 +27,8 @@ class CustomerPref(models.Model):
 
 class Customer(Contact):
     preferences = models.ForeignKey(CustomerPref, related_name='preferences', null=True)
-    extension = models.CharField(max_length=30)
-    email = models.EmailField()
+    extension = models.CharField(max_length=30, null=True, blank=True)
+    email = models.EmailField(blank=True, null=True)
 
 class CoffeeOrder(models.Model):
     date = models.DateTimeField()
@@ -36,7 +36,6 @@ class CoffeeOrder(models.Model):
     coffee_name = models.ForeignKey(MenuItem, blank=True, null=True)
     num_cups = models.IntegerField(max_length=2)
     deliver_to = models.CharField(max_length=100, blank=True, null=True)
-
 
 class Account(models.Model):
     owner = models.ForeignKey(Customer, related_name="account")
