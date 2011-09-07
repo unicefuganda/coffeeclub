@@ -15,21 +15,21 @@ class MenuItem(models.Model):
 
 class CustomerPref(models.Model):
     milk_type_choices = (('Either', 'Either'),)
-    running_order = models.BooleanField(default=False)
-    extension = models.CharField(max_length=30)
-    milk_type = models.CharField(max_length=50, choices=milk_type_choices)
-    own_cup = models.BooleanField(default=False)
-    notes = models.TextField()
-    standard_drink = models.ForeignKey(MenuItem)
-    days_on_call = models.CharField(max_length=200)
-    email = models.EmailField()
+    running_order = models.BooleanField(default=False, blank=True)
+    milk_type = models.CharField(max_length=50, choices=milk_type_choices, blank=True, null=True)
+    own_cup = models.BooleanField(default=False, blank=True)
+    notes = models.TextField(blank=True, null=True)
+    standard_drink = models.ForeignKey(MenuItem, blank=True, null=True)
+    days_on_call = models.CharField(max_length=200, blank=True, null=True)
 
 class Customer(Contact):
-    preferences = models.ForeignKey(CustomerPref, null=True)
+    preferences = models.ForeignKey(CustomerPref, related_name='preferences', null=True)
+    extension = models.CharField(max_length=30)
+    email = models.EmailField()
 
 class Order(models.Model):
     date = models.DateTimeField()
-    customer = models.ForeignKey(Contact, related_name="order")
+    customer = models.ForeignKey(Customer, related_name="order")
     item = models.ForeignKey(MenuItem)
     count = models.IntegerField(max_length=2)
 
@@ -52,7 +52,7 @@ def coffee_autoreg(**kwargs):
 
     name_poll = script.steps.get(order=1).poll
     department_poll = script.steps.get(order=2).poll
-    extesion_poll = script.steps.get(order=3).poll
+    extension_poll = script.steps.get(order=3).poll
     email_poll = script.steps.get(order=4).poll
     coffee_standard_poll = script.steps.get(order=5).poll
     milktype_poll = script.steps.get(order=6).poll
@@ -70,17 +70,37 @@ def coffee_autoreg(**kwargs):
         name = ' '.join([n.capitalize() for n in name.lower().split(' ')])
         contact.name = name[:100]
 
+    department = find_best_response(session, department_poll)
+    if department:
+        group = find_closest_match(department, Group.objects)
+        if not group:
+            group = Group.objects.get(name='Other Coffee People')
+    contact.groups.add(group)
+
+    extension = find_best_response(session, extension_poll)
+    contact.extension = extension
+
+    email = find_best_response(session, email_poll)
+    contact.email = email
+
+    prefs = CustomerPref.objects.create()
+    drink = find_best_response(session, coffee_standard_poll)
+    if drink:
+        prefs.standard_drink = find_closest_match(drink, MenuItem.objects)
+
+    milktype = find_best_response(session, milktype_poll)
+    if milktype:
+        milktype = ' '.join([n.capitalize() for n in milktype.lower().split(' ')])
+        prefs.milk_type = milktype
+
+
+    prefs.save()
+    contact.preferences = prefs
     contact.save()
 
-#    role = find_best_response(session, role_poll)
+#    
 #
-#    group = Group.objects.get(name='Other EMIS Reporters')
-#    default_group = group
-#    if role:
-#        group = find_closest_match(role, Group.objects)
-#        if not group:
-#            group = default_group
-#    contact.groups.add(group)
+#    
 #
 #
 #    subcounty = find_best_response(session, subcounty_poll)
