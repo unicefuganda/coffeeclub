@@ -1,3 +1,20 @@
-{%  extend 'layout.xhtml' %}
-{%  block content %}
-{%  endblock %}
+{% extends "generic/base.html" %}
+{% block title %}
+    Coffee Club Customers - {{ block.super }}
+{% endblock %}
+{% block stylesheets %}
+    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}rapidsms/stylesheets/layout.css" />
+    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}rapidsms/stylesheets/splits.css" />
+    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}rapidsms/stylesheets/modules.css" />
+    <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}rapidsms/stylesheets/icons.css" />
+     <link type="text/css" rel="stylesheet" href="{{MEDIA_URL}}generic/stylesheets/generic.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/coffeeclubapp/stylesheets/coffeeapp.css">
+    <link rel="stylesheet" type="text/css" href="/static/coffeeclubapp/stylesheets/bootstrap/bootstrap-1.2.0.min.css">
+
+{% endblock %}
+
+
+{% block content %}
+{{ block.super }}
+<a href="/customers/new">Add Customer</a>
+{% endblock %}
