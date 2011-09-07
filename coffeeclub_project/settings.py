@@ -22,7 +22,8 @@ sys.path.append(os.path.join(filedir, 'coffeeclubapp'))
 sys.path.append(os.path.join(filedir, 'rapidsms_status160'))
 sys.path.append(os.path.join(filedir, 'django_eav'))
 sys.path.append(os.path.join(filedir, 'rapidsms_auth'))
-sys.path.append(os.path.join(filedir, 'rapidsms_xforms'))
+sys.path.append(os.path.join(filedir, 'rapidsms_xforms_src'))
+
 # you should configure your database here before doing any real work.
 # see: http://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
@@ -54,21 +55,21 @@ INSTALLED_BACKENDS = {
 # to help you get started quickly, many django/rapidsms apps are enabled
 # by default. you may wish to remove some and/or add your own.
 INSTALLED_APPS = [
-     "coffeeclubapp",
+    "coffeeclubapp",
     "djtables",
     "mptt",
     "auth",
     "uni_form",
     "django_extensions",
     "rapidsms.contrib.handlers",
-#    "django.contrib.sites",
+    "django.contrib.sites",
     "django.contrib.auth",
     "django.contrib.admin",
     "django.contrib.sessions",
     "django.contrib.contenttypes",
     # the rapidsms contrib apps.
     "rapidsms.contrib.default",
-     "rapidsms.contrib.locations",
+    "rapidsms.contrib.locations",
     "rapidsms.contrib.locations.nested",
     "rapidsms.contrib.messaging",
     "rapidsms_httprouter",
@@ -80,13 +81,15 @@ INSTALLED_APPS = [
     "uganda_common",
     "rapidsms",
     "status160",
-     "eav",
+    "eav",
 
 ]
 
 SMS_APPS = [
     "script",
+    "coffeeclubapp",
     "poll",
+    "rapidsms_xforms",
 ]
 
 

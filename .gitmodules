@@ -31,6 +31,6 @@
 [submodule "coffeeclub_project/coffeeclubapp/static/stylesheets/bootstrap"]
 	path = coffeeclub_project/coffeeclubapp/static/stylesheets/bootstrap
 	url = git://github.com/twitter/bootstrap.git
-[submodule "coffeeclub_project/rapidsms_xforms"]
-	path = coffeeclub_project/rapidsms_xforms
+[submodule "coffeeclub_project/rapidsms_xforms_src"]
+	path = coffeeclub_project/rapidsms_xforms_src
 	url = git://github.com/unicefuganda/rapidsms-xforms.git

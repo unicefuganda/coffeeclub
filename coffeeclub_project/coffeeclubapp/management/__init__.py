@@ -42,7 +42,7 @@ def init_structures(sender, **kwargs):
         structures_initialized = True
 
 def init_groups():
-    for g in ['Waiters', 'Drinkers', 'Other Coffee People']:
+    for g in ['Waiters', 'T4D', 'Child Protection', 'Wash', 'Education', 'Other Coffee People']:
         Group.objects.get_or_create(name=g)
 
 def init_xforms(sender, **kwargs):
@@ -132,7 +132,7 @@ def init_autoreg(sender, **kwargs):
             user=user, \
             type=Poll.TYPE_TEXT, \
             name='coffee_department',
-            question='Which department are you (name and floor e.g \"T4D 2nd Floor\")?', \
+            question='Which department are you (give name of department e.g \"T4D, WASH or Education\")?', \
             default_response='', \
         )
         script.steps.add(ScriptStep.objects.create(
@@ -162,17 +162,34 @@ def init_autoreg(sender, **kwargs):
             num_tries=1,
             giveup_offset=86400,
         ))
+        email_poll = Poll.objects.create(
+            user=user, \
+            type=Poll.TYPE_TEXT, \
+            name='coffee_email',
+            question='What is your email address?', \
+            default_response='', \
+        )
+        script.steps.add(ScriptStep.objects.create(
+            script=script,
+            poll=email_poll,
+            order=4,
+            rule=ScriptStep.RESEND_MOVEON,
+            start_offset=0,
+            retry_offset=86400,
+            num_tries=1,
+            giveup_offset=86400,
+        ))
         standardcoffee_poll = Poll.objects.create(
             user=user, \
             type=Poll.TYPE_TEXT, \
-            name='coffee_standard_coffee',
+            name='coffee_standard_type',
             question='Which is your favorite coffee (cappuccino, expresso)?', \
             default_response='', \
         )
         script.steps.add(ScriptStep.objects.create(
             script=script,
             poll=standardcoffee_poll,
-            order=4,
+            order=5,
             rule=ScriptStep.RESEND_MOVEON,
             start_offset=0,
             retry_offset=86400,
@@ -189,7 +206,7 @@ def init_autoreg(sender, **kwargs):
         script.steps.add(ScriptStep.objects.create(
             script=script,
             poll=milktype_poll,
-            order=5,
+            order=6,
             rule=ScriptStep.RESEND_MOVEON,
             start_offset=0,
             retry_offset=86400,
@@ -198,7 +215,7 @@ def init_autoreg(sender, **kwargs):
         ))
         running_order_poll = Poll.objects.create(
             user=user, \
-            type=Poll.TYPE_YESNO, \
+            type=Poll.TYPE_TEXT, \
             name='coffee_running_order',
             question='Would you like to place a running order (If Yes, send us the days e.g Mon, Tue, Wed if No, Ignore this question)?', \
             default_response='', \
@@ -206,7 +223,7 @@ def init_autoreg(sender, **kwargs):
         script.steps.add(ScriptStep.objects.create(
             script=script,
             poll=running_order_poll,
-            order=6,
+            order=7,
             rule=ScriptStep.RESEND_MOVEON,
             num_tries=1,
             start_offset=0,
@@ -215,7 +232,7 @@ def init_autoreg(sender, **kwargs):
         ))
         own_cup_poll = Poll.objects.create(
             user=user, \
-            type=Poll.TYPE_YESNO, \
+            type='yn', \
             name='coffee_own_cup',
             question='Do you prefer to use your own personal cup (Yes or No)?', \
             default_response='', \
@@ -249,7 +266,7 @@ def init_autoreg(sender, **kwargs):
         script.steps.add(ScriptStep.objects.create(
             script=script,
             poll=own_cup_poll,
-            order=7,
+            order=8,
             rule=ScriptStep.RESEND_MOVEON,
             num_tries=1,
             start_offset=0,
@@ -266,7 +283,7 @@ def init_autoreg(sender, **kwargs):
         script.steps.add(ScriptStep.objects.create(
             script=script,
             poll=other_notes_poll,
-            order=8,
+            order=9,
             rule=ScriptStep.RESEND_MOVEON,
             num_tries=1,
             start_offset=0,
@@ -276,7 +293,7 @@ def init_autoreg(sender, **kwargs):
         script.steps.add(ScriptStep.objects.create(
             script=script,
             message="Thank you for registering as a new member of the coffee club, remember to deposit funds in your new account with Anna Spindler in Supply Unit.",
-            order=9,
+            order=10,
             rule=ScriptStep.WAIT_MOVEON,
             start_offset=60,
             giveup_offset=0,
