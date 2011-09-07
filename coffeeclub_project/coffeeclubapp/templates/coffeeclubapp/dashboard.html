@@ -9,14 +9,14 @@
             <div class="page-header">
                 <h2>Daily Coffee Order</h2>
             </div>
-
+<table>
             <form action="/" method="Post">
-                {{ order_form }}
+                {{ order_form.as_table}}
 
                 </br>
-                <input type="submit" value="Save Order">
+            <tr> <td></td><td><input type="submit" value="Save Order"></td></tr>   
             </form>
-
+</table>
         </div>
         <div class="span8 columns">
             <div class="page-header">

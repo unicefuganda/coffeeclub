@@ -304,7 +304,7 @@ if(!d.datepicker.initialized){d(document).mousedown(d.datepicker._checkExternalC
                         minLength: 0
                     })
                     .addClass("ui-widget ui-widget-content ui-corner-left");
-                $("<button>&nbsp;</button>")
+                $("<button style='display:none;'>&nbsp;</button>")
                 .attr("tabIndex", -1)
                 .attr("title", "Show All Items")
                 .insertAfter(input)

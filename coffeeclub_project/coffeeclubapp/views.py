@@ -23,5 +23,7 @@ def dashboard(request):
     return render_to_response('coffeeclubapp/dashboard.html',{'order_form':order_form},
     context_instance=RequestContext(request))
 
+def edit_customer(request):
+    pass
 def cutomer_detail(request):
     return render_to_response('coffeeclubapp/customer_detail.html',context_instance=RequestContext(request))
