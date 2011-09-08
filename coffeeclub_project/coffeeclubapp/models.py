@@ -29,8 +29,6 @@ class CustomerPref(models.Model):
     own_cup = models.BooleanField(default=False, blank=True)
     notes = models.TextField(blank=True, null=True)
 
-
-
 class Customer(Contact):
     preferences = models.ForeignKey(CustomerPref, related_name='preferences', null=True)
     extension = models.CharField(max_length=30, null=True, blank=True)

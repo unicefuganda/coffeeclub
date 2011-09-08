@@ -1,20 +1,28 @@
 
-<td>
-    <a href="/customers/{{ object.pk }}/view/">{{ object.name }}</a>
-</td>
+<!--customer-->
+<td><a href="/customers/{{ object.pk }}/view/">{{ object.name }}</a></td>
+<!-- extension-->
 <td>{{ object.extension }}</td>
+<<<<<<< HEAD
 <td>
-    {{ object.groups.0 }},{{ object.groups.0.floor }}
+    {{ object.groups.0.name}},{{ object.groups.0.floor }}
 </td>
-<td>{{ object.extension }}</td>
 <td>
     {{ object.preferences.standard_drink }}
 </td>
+=======
+<!-- location -->
+<td>{{ object.groups.0 }},{{ object.groups.0.floor }}</td>
+<!-- standard drink -->
+<td>{{ object.preferences.standard_drink }}</td>
+<!-- milk type -->
+>>>>>>> ef58dff53a56020000dc2078467e3c2709dd3d0e
 <td>{{ object.preferences.milk_type }}</td>
-<td>
-    {{ object.preferences.running_order }}
-</td>
+<!-- running order -->
+<td>{{ object.preferences.running_order }}</td>
+<!-- Which days per week on call? -->
 <td>{{ object.prefreences.days_on_call }}</td>
+<<<<<<< HEAD
 <td>
     {{ object.preferences.own_cup }}
 </td>
@@ -22,5 +30,13 @@
     {{ object.preferences.notes }}
 </td>
 <td>
-    {{ object.account.balance }}
+   {{ object.account.0.balance}}
 </td>
+=======
+<!-- does customer own a cup?-->
+<td>{{ object.preferences.own_cup }}</td>
+<!-- are there any extra notes -->
+<td>{{ object.preferences.notes }}</td>
+<!-- What is customer's current balance?-->
+<td>{{ object.account.balance }}</td>
+>>>>>>> ef58dff53a56020000dc2078467e3c2709dd3d0e

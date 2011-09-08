@@ -1,5 +1,13 @@
 from django.forms.models import ModelForm
-from .models import CoffeeOrder, Customer, CustomerPref
+from django import forms
+from .models import CoffeeOrder, Customer, CustomerPref, MenuItem
+
+class MenuItemForm(ModelForm):
+    class Meta:
+        model = MenuItem
+
+
+#TODO forms for managing groups e.g. departments, clubs, etc. (something generic)
 
 class OrderForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -11,6 +19,8 @@ class OrderForm(ModelForm):
 
     class Meta:
         model=CoffeeOrder
+        exclude=('date')
+        fields=('customer','coffee_name','num_cups','deliver_to')
 
 class CustomerForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -28,6 +38,20 @@ class CustomerForm(ModelForm):
         else:
             return cleaned_data
 
+
+class PrefrencesForm(ModelForm):
+    class Meta:
+        model=CustomerPref
+
+class UploadForm(forms.Form):
+    excel_file = forms.FileField(label="Excel File",required=True)
+    def clean(self):
+        excel = self.cleaned_data.get('excel_file',None)
+        if excel and excel.name.rsplit('.')[1] != 'xls':
+                msg=u'Upload valid excel file !!!'
+                self._errors["excel_file"]=ErrorList([msg])
+                return ''
+        return self.cleaned_data
 
 class PrefrencesForm(ModelForm):
     class Meta:

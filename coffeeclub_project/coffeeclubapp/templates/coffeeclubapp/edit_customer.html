@@ -1,13 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
+    <div class="row">
+        <div class="span16 columns">
+            <div class="page-header">
+                <h2>Add Customer</h2>
+            </div>
 
-<form action="/customers/edit/" method="Post">
-<table>
-    {{ customer_form.as_table }}
-    {{ preferences_form.as_table }}
-    <tr><td><input type="submit" value="Save Customer"> </td></tr>
-</table>
+        <table class="form">
+        <form action="/customers/new/" method="Post" class="form-stacked">
 
-</form>
+        {{ customer_form.as_table }}
+        {{ preferences_form.as_table }}
+        <tr><td></td><td><input type="submit" value="Save Customer" class="btn primary"> </td></tr>
 
+        </form>
+    </table>
+    </div>
 {% endblock %}
