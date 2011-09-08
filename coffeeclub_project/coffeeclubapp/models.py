@@ -21,11 +21,14 @@ class MenuItem(models.Model):
 class CustomerPref(models.Model):
     milk_type_choices = (('either', 'Either'),('low fat','Low Fat'),('whole','Whole'))
     running_order = models.BooleanField(default=False, blank=True)
+    standard_drink = models.ForeignKey(MenuItem, blank=True, null=True)
     milk_type = models.CharField(max_length=50, choices=milk_type_choices, blank=True, null=True)
+    #TODO naming is a bit off (Which days per week?)
+    days_on_call = models.CharField(max_length=200, blank=True, null=True)
     own_cup = models.BooleanField(default=False, blank=True)
     notes = models.TextField(blank=True, null=True)
-    standard_drink = models.ForeignKey(MenuItem, blank=True, null=True)
-    days_on_call = models.CharField(max_length=200, blank=True, null=True)
+
+
 
 class Customer(Contact):
     preferences = models.ForeignKey(CustomerPref, related_name='preferences', null=True)
