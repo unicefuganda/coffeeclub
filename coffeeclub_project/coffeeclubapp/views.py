@@ -71,6 +71,7 @@ def delete_customer(request,customer_id):
         return HttpResponse("Success")
     else:
         return HttpResponse("Failed")
+
 def customer_details(request,customer_pk):
     customer=get_object_or_404(Customer,pk=customer_pk)
     return render_to_response('coffeeclubapp/customer_detail.html',{'customer':customer},
