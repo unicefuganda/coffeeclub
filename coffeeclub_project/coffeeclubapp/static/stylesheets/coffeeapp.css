@@ -68,7 +68,10 @@ div.letter_body{
 div.newsletter_message{
     padding: 10px;
 }
-
+div.balance{
+    border: 1px solid #ffddaa;
+    padding: 10px;
+}
 
 
 
