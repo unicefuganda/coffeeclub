@@ -18,8 +18,10 @@ from rapidsms_httprouter.router import get_router
 from script.signals import script_progress_was_completed, script_progress
 from poll.management import create_attributes
 from .management import init_groups, init_xforms, init_autoreg
-from .models import MenuItem, CustomerPref, Customer, CoffeeOrder, Account, Department
+from .models import MenuItem, CustomerPref, Customer, CoffeeOrder, Account, Department, Email
+from .utils import balance_alerts, marketing_email
 from django.db import connection
+from django.core import mail
 
 class ModelTest(TestCase): #pragma: no cover
 
@@ -181,5 +183,85 @@ class ModelTest(TestCase): #pragma: no cover
         self.fake_incoming('coffee location Western Conference Room type cappucino')
         coffee_order = CoffeeOrder.objects.order_by('-date').filter(customer=contact)[0]
         self.assertEquals(Message.objects.all().order_by('-date')[0].text, str(coffee_order.num_cups) + " cup(s) of " + self.cappuccino.name + " coming up shortly! We will deliver to " + coffee_order.deliver_to)
+
+    def testBalanceAlerts(self):
+        self.fake_incoming('join')
+        self.assertEquals(ScriptProgress.objects.count(), 1)
+        script_prog = ScriptProgress.objects.all()[0]
+        self.assertEquals(script_prog.script.slug, 'coffee_autoreg')
+
+        self.fake_script_dialog(script_prog, self.connection, [\
+            ('coffee_drinker', 'alfred assey'), \
+            ('coffee_department', 'T4D'), \
+            ('coffee_extension', '1760'), \
+            ('coffee_email', 'asseym@gmail.com'), \
+            ('coffee_standard_type', 'xpresso'), \
+            ('coffee_milktype', 'cow milk'), \
+            ('coffee_running_order', 'Mon, Tue, Wednesday, Thur'), \
+            ('coffee_own_cup', 'no'), \
+            ('coffee_other_notes', 'add some sugar'), \
+        ])
+
+        contact = Customer.objects.all()[0]
+        account = Account.objects.filter(owner=contact)[0]
+        account.balance = -2500
+        account.save()
+        self.fake_script_dialog(script_prog, self.connection, [\
+            ('coffee_drinker', 'moses mugisha'), \
+            ('coffee_department', 'T4D'), \
+            ('coffee_extension', '1760'), \
+            ('coffee_email', 'mossplix@mossplix.com'), \
+            ('coffee_standard_type', 'xpresso'), \
+            ('coffee_milktype', 'cow milk'), \
+            ('coffee_running_order', 'Mon, Tue, Wednesday, Thur'), \
+            ('coffee_own_cup', 'no'), \
+            ('coffee_other_notes', 'add some sugar'), \
+        ])
+
+        Email.objects.create(subject='{{ subject }}', message='<p>Your coffee account balance is {{ bal }}</p><p>Please Pay up as soon as possible</p><p>{{ signature }}</p>')
+        balance_alerts()
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Outstanding Balance Alert')
+        self.assertEqual(mail.outbox[0].body, '<p>Your coffee account balance is -2500</p><p>Please Pay up as soon as possible</p><p>Management</p>');
+
+    def testPromotionEmail(self):
+        self.fake_incoming('join')
+        self.assertEquals(ScriptProgress.objects.count(), 1)
+        script_prog = ScriptProgress.objects.all()[0]
+        self.assertEquals(script_prog.script.slug, 'coffee_autoreg')
+
+        self.fake_script_dialog(script_prog, self.connection, [\
+            ('coffee_drinker', 'alfred assey'), \
+            ('coffee_department', 'T4D'), \
+            ('coffee_extension', '1760'), \
+            ('coffee_email', 'asseym@gmail.com'), \
+            ('coffee_standard_type', 'xpresso'), \
+            ('coffee_milktype', 'cow milk'), \
+            ('coffee_running_order', 'Mon, Tue, Wednesday, Thur'), \
+            ('coffee_own_cup', 'no'), \
+            ('coffee_other_notes', 'add some sugar'), \
+        ])
+
+        self.fake_script_dialog(script_prog, self.connection, [\
+            ('coffee_drinker', 'moses mugisha'), \
+            ('coffee_department', 'T4D'), \
+            ('coffee_extension', '1760'), \
+            ('coffee_email', 'mossplix@mossplix.com'), \
+            ('coffee_standard_type', 'xpresso'), \
+            ('coffee_milktype', 'cow milk'), \
+            ('coffee_running_order', 'Mon, Tue, Wednesday, Thur'), \
+            ('coffee_own_cup', 'no'), \
+            ('coffee_other_notes', 'add some sugar'), \
+        ])
+
+        Email.objects.create(subject='{{ subject }}', message='<p>{{marketing_message }}</p>')
+        marketing_email()
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(mail.outbox[0].to, 'asseym@gmail.com')
+        self.assertEqual(mail.outbox[0].subject, 'Buy 1 get 4 free!')
+        self.assertEqual(mail.outbox[0].body, 'This September buy 1 expresso and 4 on the house!');
+        self.assertEqual(mail.outbox[1].to, 'mossplix@mossplix.com')
+        self.assertEqual(mail.outbox[1].subject, 'Buy 1 get 4 free!')
+        self.assertEqual(mail.outbox[1].body, 'This September buy 1 expresso and 4 on the house!');
 
 

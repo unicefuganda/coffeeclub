@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.signals import post_save
 from rapidsms.models import Contact
 from django.contrib.auth.models import Group
 from script.signals import script_progress_was_completed
@@ -8,6 +7,8 @@ from script.utils.handling import find_closest_match, find_best_response
 from poll.models import YES_WORDS
 from rapidsms_xforms.models import XFormField, XForm, XFormSubmission, dl_distance, xform_received
 import datetime
+from django.template import Template, Context
+from django.core.mail import send_mail
 
 class Department(Group):
     floor = models.CharField(max_length=15, blank=True)
@@ -35,6 +36,23 @@ class Customer(Contact):
     extension = models.CharField(max_length=30, null=True, blank=True)
     email = models.EmailField(blank=True, null=True)
 
+    def in_negative(self):
+        return Account.objects.filter(owner=self, balance_lt=0)
+
+    def bal(self):
+        return self.accounts.all()[0].balance
+
+    def send_email(self, context={}, type=False):
+        recipients = list(self.email)
+        msg = Email.objects.filter(email_type=type)[0] if type else Email.objects.filter(email_type='alert')[0]
+        subject_template = Template(msg.subject)
+        message_template = Template(msg.message)
+        ctxt = Context(context)
+        subject = subject_template.render(ctxt)
+        message = message_template.render(ctxt)
+        if message.strip():
+            send_mail(subject, message, msg.sender, recipients, fail_silently=False)
+
     def save(self, force_insert=False, force_update=False, using=False):
         if self.preferences is None:
             self.preferences = CustomerPref.objects.create()
@@ -48,10 +66,16 @@ class CoffeeOrder(models.Model):
     deliver_to = models.CharField(max_length=100, blank=True, null=True)
 
 class Account(models.Model):
-    owner = models.ForeignKey(Customer, related_name="account")
+    owner = models.ForeignKey(Customer, related_name="accounts")
     balance = models.IntegerField(max_length=10, default=0)
     date_updated = models.DateTimeField(auto_now=True)
 
+class Email(models.Model):
+    email_type_choices = (('alert', 'Balance Alert'), ('marketing', 'Marketing'))
+    subject = models.TextField()
+    sender = models.EmailField(default='no-reply@uganda.rapidsms.org')
+    message = models.TextField()
+    email_type = models.CharField(max_length=10, default='alert', choices=email_type_choices, blank=True, null=True)
 
 def coffee_autoreg(**kwargs):
 
@@ -116,7 +140,6 @@ def coffee_autoreg(**kwargs):
         notes = ' '.join([n.capitalize() for n in notes.lower().split(' ')])
         prefs.notes = notes
 
-
     prefs.save()
     Account.objects.create(owner=contact)
 
@@ -151,7 +174,6 @@ def xform_received_handler(sender, **kwargs):
 
 script_progress_was_completed.connect(coffee_autoreg, weak=False)
 xform_received.connect(xform_received_handler, weak=False)
-#post_save.connect(new_customer_prefs, sender=Customer, weak=False)
 
 
 
