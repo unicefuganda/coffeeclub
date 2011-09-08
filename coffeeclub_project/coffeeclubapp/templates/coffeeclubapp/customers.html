@@ -4,18 +4,15 @@
 {% endblock %}
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}coffeeclubapp/stylesheets/coffeeapp.css">
-          <link rel="stylesheet" type="text/css"
-                href="{{ MEDIA_URL }}coffeeclubapp/stylesheets/bootstrap/bootstrap-1.2.0.min.css">
-          <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}coffeeclubapp/stylesheets/jquery_ui/jquery-ui.css">
-          <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
-              <!--[if lt IE 9]>
-                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-              <![endif]-->
-            
-
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}coffeeclubapp/stylesheets/bootstrap/bootstrap-1.2.0.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}coffeeclubapp/stylesheets/jquery_ui/jquery-ui.css">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->            
 {% endblock %}
 
-    {% block javascripts %}
+{% block javascripts %}
         {{ block.super }}
         <script type="text/javascript" src="{{ MEDIA_URL }}coffeeclubapp/javascripts/jquery-1.6.2.min.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}rapidsms/javascripts/collapse.js"></script>
@@ -24,13 +21,12 @@
             $(function() {
                 $(".autocomplete").combobox();
                 $('table.results').addClass('zebra-striped');
-
             });
         </script>
-    {% endblock %}
+{% endblock %}
 
 
 {% block content %}
-{{ block.super }}
-<a class="btn primary " href="/customers/new/">Add Customer</a>
+    {{ block.super }}
+    <a class="btn primary " href="/customers/new/">Add Customer</a>
 {% endblock %}
