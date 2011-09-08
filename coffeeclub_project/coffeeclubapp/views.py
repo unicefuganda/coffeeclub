@@ -5,7 +5,7 @@ from uganda_common.utils import ExcelResponse
 from xlrd import open_workbook
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
-from forms import CustomerForm, OrderForm, PrefrencesForm
+from forms import CustomerForm, OrderForm, PrefrencesForm,UploadForm
 
 def dashboard(request):
     order_form=OrderForm()
