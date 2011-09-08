@@ -35,13 +35,16 @@ class Customer(Contact):
     email = models.EmailField(blank=True, null=True)
 
     def in_negative(self):
-        return Account.objects.filter(owner=self, balance_lt=0)
+#        return Account.objects.filter(owner=self, balance_lt=0)
+        return self.accounts.filter(balance_lt=0)
 
-    def bal(self):
+    def account_bal(self):
+
         if self.accounts.exists():
             return self.accounts.all()[0].balance
         else:
             return 0
+
 
     def send_email(self, context={}, type=False):
         recipients = list(self.email)
