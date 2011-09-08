@@ -28,6 +28,8 @@ urlpatterns = patterns('',
         (r'^messaging/', include('rapidsms.contrib.messaging.urls')),
         (r'^registration/', include('auth.urls')),
         (r'^scheduler/', include('rapidsms.contrib.scheduler.urls')),
+
+        url(r'^management/',management,name="management_dashboard"),
         (r'^polls/', include('poll.urls')),
         url(r'^customers/(?P<customer_pk>\d+)/edit/',edit_customer,name="edit_customer"),
         url(r'^customers/(?P<customer_pk>\d+)/delete/',delete_customer,name="delete_customer"),

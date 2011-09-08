@@ -1,6 +1,13 @@
 from django.forms.models import ModelForm
 from django import forms
-from .models import CoffeeOrder, Customer, CustomerPref
+from .models import CoffeeOrder, Customer, CustomerPref, MenuItem
+
+class MenuItemForm(ModelForm):
+    class Meta:
+        model = MenuItem
+
+
+#TODO forms for managing groups e.g. departments, clubs, etc. (something generic)
 
 class OrderForm(ModelForm):
     def __init__(self, *args, **kwargs):
