@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}coffeeclubapp/stylesheets/bootstrap/bootstrap-1.2.0.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}coffeeclubapp/stylesheets/coffeeapp.css">
+    <title>Coffee club newsletter {% block news_letter_date %}{% endblock %}</title>
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
+</html>
