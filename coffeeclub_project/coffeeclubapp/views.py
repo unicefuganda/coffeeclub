@@ -62,10 +62,10 @@ def handle_excel_file(file):
             customer.save()
             for row in range(8,worksheet.nrows):
                 date_of_payement=datetime.datetime.strptime(worksheet.cell(row,1),"'%d/%m/%Y")
-
-                Account.objects.create()
-            
-
+                account=Account.objects.get_or_create(owner=customer)
+                old_blc=account.balance
+                account.balance=int(str(worksheet.cell(row,2).value).replace(',',''))+old_blc
+                account.save()
 
 
 def edit_customer(request,customer_id=None):
