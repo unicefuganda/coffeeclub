@@ -68,9 +68,9 @@ def handle_excel_file(file):
                 account.save()
 
 
-def edit_customer(request,customer_id=None):
-    if customer_id :
-        customer=get_object_or_404(Customer,pk=customer_id)
+def edit_customer(request,customer_pk=None):
+    if customer_pk :
+        customer=get_object_or_404(Customer,pk=customer_pk)
         customer_form=CustomerForm(instance=customer)
         preferences_form=PrefrencesForm(instance=customer.preferences)
 
