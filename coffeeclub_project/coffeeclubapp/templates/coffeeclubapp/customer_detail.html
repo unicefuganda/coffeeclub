@@ -19,13 +19,13 @@
         <tr>
             <td>{{ customer.extension }}</td>
             <td>{{ customer.name }}</td>
-            <td>2nd</td>
+            <!-- TODO make groups.0 render some text, now this is not rendering.-->
+            <td>{{ customer.groups.0 }}</td>
             <td>{{ customer.preferences.standard_drink }}</td>
             <td>{{ customer.preferences.milk_type_choices }}</td>
-            <td>{{ customer.preferences. }}</td>
-            <td>on call</td>
-            <td>No</td>
-            <td>no choc on top</td>
+            <td>{{ customer.preferences.days_on_call }}</td>
+            <td>{{ customer.preferences.own_cup }}</td>
+            <td>{{ customer.preferences.notes }}</td>
         </tr>
     </table>
     </div>
@@ -33,8 +33,9 @@
     <div class="page-header">
         <h1>Accounting</h1>
     </div>
-    <table>
-    <tr>
+        {% if coffee_order %}
+        <table>
+        <tr>
         <th>Type of Payment</th>
         <th>Date of Payment</th>
         <th>Amount (UGX)</th>
@@ -43,8 +44,16 @@
         <th>Cup3</th>
         <th>Cup4</th>
         <th>Refill Card given?</th>
-    </tr>
-        
-    </table>
+        </tr>
+
+        <tr>
+            <td>
+                {{ coffee_order }}
+            </td>
+        </tr>
+        </table>
+        {% else %}
+            <p class="orange">There are no orders yet</p>
+        {% endif %}
     </div>
 {%  endblock %}
