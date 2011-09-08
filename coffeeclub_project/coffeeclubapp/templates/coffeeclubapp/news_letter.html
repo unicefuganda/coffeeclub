@@ -1,0 +1,19 @@
+
+{% extends "newsletter/base.html" %}
+{% block content %}
+    <div class="letter_body">
+    <!-- Anna can override the default salutation -->
+    {% block salutation %}
+    Hi {{ customer.name }}
+    {% endblock %}
+    <br/>
+    <div class="newsletter_message">
+    <p>{% block message %}{% endblock %}</p>
+    <br/>
+    <address>
+        {{ name_of_sender }}<br/>
+        <pre>{{ address_of_sender }}</pre>
+    </address>
+    </div>
+    </div>
+{% endblock %}
