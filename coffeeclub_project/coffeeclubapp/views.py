@@ -11,11 +11,11 @@ class OrderForm(ModelForm):
         super(OrderForm, self).__init__(*args, **kwargs)
         self.fields['customer'].widget.attrs['class'] = 'autocomplete'
         self.fields['customer'].help_text="start typing to see available customers"
-        self.fields['item'].widget.attrs['class'] = 'autocomplete'
-        self.fields['item'].help_text="start typing to see available Menu Items"
+        self.fields['coffee_name'].widget.attrs['class'] = 'autocomplete'
+        self.fields['coffee_name'].help_text="start typing to see available Menu Items"
 
     class Meta:
-        model=Order
+        model=CoffeeOrder
 
 class CustomerForm(ModelForm):
     def __init__(self, *args, **kwargs):
