@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+    Upload Excel
+{% endblock %}
+{% block content %}
+    <div class="span8 columns">
+            <div class="page-header">
+                <h2>Upload Customers Excel File</h2>
+            </div>
+    <table>
+<form enctype="multipart/form-data" action="/customers/upload/" method="Post">
+    {{ upload_form.as_table }}
+
+   <tr><td> <input type="submit" class="btn primary" value="Upload" ></td></tr>
+</form>
+
+    </table>
+{% endblock%} %}

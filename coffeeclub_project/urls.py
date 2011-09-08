@@ -34,6 +34,8 @@ urlpatterns = patterns('',
          url(r'^customers/(?P<customer_pk>\d+)/view/',customer_details,name="view_customer"),
         url(r'^customers/new/',edit_customer,name="new_customer"),
         url(r'^customers/edit/',edit_customer,name="edit_customer"),
+        url(r'^customers/upload/',upload_customers,name="upload_customers"),
+        url(r'^customers/export/',export_cusomers,name="export_customers"),
         url(r'^customers/$', generic, {
         'model':Customer,
         'queryset':Customer.objects.all(),

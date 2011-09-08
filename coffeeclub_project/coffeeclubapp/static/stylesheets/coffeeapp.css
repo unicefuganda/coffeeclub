@@ -23,6 +23,20 @@ color: #fff;
 margin: 0;
 }
 
+.form th{
+
+    border: None;
+    font-weight: bold;
+    padding-top: 9px;
+}
+
+.form th, .form td {
+    line-height: 13.5px;
+    padding: 10px 10px 9px;
+    text-align: left;
+    vertical-align: middle;
+}
+}
 ul.tabs{
     float:right;
 }
