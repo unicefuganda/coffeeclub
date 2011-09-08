@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.signals import class_prepared
+from django.db.models.signals import post_save
 from rapidsms.models import Contact
 from django.contrib.auth.models import Group
 from script.signals import script_progress_was_completed
@@ -19,7 +19,7 @@ class MenuItem(models.Model):
         return self.name
 
 class CustomerPref(models.Model):
-    milk_type_choices = (('either', 'Either'),('low fat','Low Fat'),('whole','Whole'))
+    milk_type_choices = (('either', 'Either'), ('low fat', 'Low Fat'), ('whole', 'Whole'))
     running_order = models.BooleanField(default=False, blank=True)
     standard_drink = models.ForeignKey(MenuItem, blank=True, null=True)
     milk_type = models.CharField(max_length=50, choices=milk_type_choices, blank=True, null=True)
@@ -32,6 +32,11 @@ class Customer(Contact):
     preferences = models.ForeignKey(CustomerPref, related_name='preferences', null=True)
     extension = models.CharField(max_length=30, null=True, blank=True)
     email = models.EmailField(blank=True, null=True)
+
+    def save(self, force_insert=False, force_update=False, using=False):
+        if self.preferences is None:
+            self.preferences = CustomerPref.objects.create()
+        super(Customer, self).save(force_insert, force_update)
 
 class CoffeeOrder(models.Model):
     date = models.DateTimeField()
@@ -88,8 +93,9 @@ def coffee_autoreg(**kwargs):
 
     email = find_best_response(session, email_poll)
     contact.email = email
+    contact.save()
 
-    prefs = CustomerPref.objects.create()
+    prefs = contact.preferences
     drink = find_best_response(session, coffee_standard_poll)
     if drink:
         prefs.standard_drink = find_closest_match(drink, MenuItem.objects)
@@ -110,9 +116,6 @@ def coffee_autoreg(**kwargs):
 
 
     prefs.save()
-    contact.preferences = prefs
-    contact.save()
-
     Account.objects.create(owner=contact)
 
 def xform_received_handler(sender, **kwargs):
@@ -143,8 +146,10 @@ def xform_received_handler(sender, **kwargs):
             )
         submission.response = str(num_cups) + ' cup(s) of ' + coffee_name.name + ' coming up shortly! We will deliver to ' + deliver_to
         submission.save()
+
 script_progress_was_completed.connect(coffee_autoreg, weak=False)
 xform_received.connect(xform_received_handler, weak=False)
+#post_save.connect(new_customer_prefs, sender=Customer, weak=False)
 
 
 
