@@ -1,5 +1,7 @@
 from django.contrib import admin
-from coffeeclubapp.models import *
-admin.site.register(Order)
+from .models import *
+admin.site.register(CoffeeOrder)
 admin.site.register(CustomerPref)
 admin.site.register(Account)
+admin.site.register(MenuItem)
+admin.site.register(Customer)

@@ -15,9 +15,11 @@ class Department(Group):
 class MenuItem(models.Model):
     name = models.CharField(max_length=50, blank=True)
     cost = models.IntegerField(max_length=10, blank=True, null=True)
+    def __unicode__(self):
+        return self.name
 
 class CustomerPref(models.Model):
-    milk_type_choices = (('Either', 'Either'),)
+    milk_type_choices = (('either', 'Either'),('low fat','Low Fat'),('whole','Whole'))
     running_order = models.BooleanField(default=False, blank=True)
     milk_type = models.CharField(max_length=50, choices=milk_type_choices, blank=True, null=True)
     own_cup = models.BooleanField(default=False, blank=True)

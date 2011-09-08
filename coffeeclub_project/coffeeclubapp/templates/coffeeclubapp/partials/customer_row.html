@@ -1,3 +1,26 @@
+
 <td>
-    {{ object.name }}
+    <a href="/customers/{{ object.pk }}/view/">{{ object.name }}</a>
+</td>
+<td>{{ object.extension }}</td>
+<td>
+    {{ object.groups.0 }},{{ object.groups.0.floor }}
+</td>
+<td>{{ object.extension }}</td>
+<td>
+    {{ object.preferences.standard_drink }}
+</td>
+<td>{{ object.preferences.milk_type }}</td>
+<td>
+    {{ object.preferences.running_order }}
+</td>
+<td>{{ object.prefreences.days_on_call }}</td>
+<td>
+    {{ object.preferences.own_cup }}
+</td>
+<td>
+    {{ object.preferences.notes }}
+</td>
+<td>
+    {{ object.account.balance }}
 </td>
