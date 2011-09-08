@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from coffeeclubapp.views import dashboard
+from coffeeclubapp.views import *
 from rapidsms_httprouter.urls import urlpatterns as router_urls
 from django.conf import settings
 from generic.views import generic, generic_row
@@ -29,6 +29,11 @@ urlpatterns = patterns('',
         (r'^registration/', include('auth.urls')),
         (r'^scheduler/', include('rapidsms.contrib.scheduler.urls')),
         (r'^polls/', include('poll.urls')),
+        url(r'^customers/(?P<customer_pk>\d+)/edit/',edit_customer,name="edit_customer"),
+        url(r'^customers/(?P<customer_pk>\d+)/delete/',delete_customer,name="delete_customer"),
+         url(r'^customers/(?P<customer_pk>\d+)/view/',customer_details,name="view_customer"),
+        url(r'^customers/new/',edit_customer,name="new_customer"),
+        url(r'^customers/edit/',edit_customer,name="edit_customer"),
         url(r'^customers/$', generic, {
         'model':Customer,
         'queryset':Customer.objects.all(),
@@ -49,7 +54,7 @@ urlpatterns = patterns('',
                  ('Days/Week', False, '', None,),
                  ('Own Cup', False, '', None,),
                  ('Notes', False, '', None,),
-                 ('Balance', False, '', None,),
+                 ('Balance', False, '',  SimpleSorter(),),
                  ],
     }, name="poll_dashboard"),
         ) + router_urls  + generic_urls 

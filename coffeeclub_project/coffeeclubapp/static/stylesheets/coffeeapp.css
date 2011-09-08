@@ -26,3 +26,20 @@ margin: 0;
 ul.tabs{
     float:right;
 }
+.topbar .custom_fill
+{
+    background-color: #cccccc;
+  background-color: #cccccc;
+  background-repeat: repeat-x;
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#cccccc), to(#cccccc));
+  background-image: -moz-linear-gradient(top, #cccccc, #cccccc);
+  background-image: -ms-linear-gradient(top, #cccccc, #cccccc);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #333333), color-stop(100%, #222222));
+  background-image: -webkit-linear-gradient(top, #cccccc, #cccccc);
+  background-image: -o-linear-gradient(top, #cccccc, #cccccc);
+  background-image: linear-gradient(top, #cccccc, #cccccc);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#cccccc', GradientType=0);
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
