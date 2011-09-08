@@ -56,7 +56,7 @@ urlpatterns = patterns('',
                  ('Days/Week', False, '', None,),
                  ('Own Cup', False, '', None,),
                  ('Notes', False, '', None,),
-                 ('Balance', False, '',  SimpleSorter(),),
+                 ('Balance', False, 'account',  SimpleSorter(),),
                  ],
     }, name="poll_dashboard"),
         ) + router_urls  + generic_urls 
