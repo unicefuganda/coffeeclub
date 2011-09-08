@@ -203,7 +203,7 @@ class ModelTest(TestCase): #pragma: no cover
         ])
 
         contact = Customer.objects.all()[0]
-        account = Account.objects.filter(owner=contact)[0]
+        account = contact.accounts.all()[0]
         account.balance = -2500
         account.save()
         self.fake_script_dialog(script_prog, self.connection, [\
@@ -242,7 +242,9 @@ class ModelTest(TestCase): #pragma: no cover
             ('coffee_other_notes', 'add some sugar'), \
         ])
 
-        self.fake_script_dialog(script_prog, self.connection, [\
+        conn = Connection.objects.create(identity='9675309', backend=self.backend)
+        self.fake_incoming('join', connection=conn)
+        self.fake_script_dialog(script_prog, conn, [\
             ('coffee_drinker', 'moses mugisha'), \
             ('coffee_department', 'T4D'), \
             ('coffee_extension', '1760'), \
@@ -254,14 +256,16 @@ class ModelTest(TestCase): #pragma: no cover
             ('coffee_other_notes', 'add some sugar'), \
         ])
 
-        Email.objects.create(subject='{{ subject }}', message='<p>{{marketing_message }}</p>')
+        self.assertEquals(Customer.objects.count(), 2)
+        Email.objects.create(subject='{{ subject }}', message='<p>{{ marketing_message }}</p>')
         marketing_email()
         self.assertEqual(len(mail.outbox), 2)
-        self.assertEqual(mail.outbox[0].to, 'asseym@gmail.com')
+        print dir(mail.outbox[0].recipients)
+        self.assertEqual(''.join(mail.outbox[0].to), 'asseym@gmail.com')
         self.assertEqual(mail.outbox[0].subject, 'Buy 1 get 4 free!')
-        self.assertEqual(mail.outbox[0].body, 'This September buy 1 expresso and 4 on the house!');
-        self.assertEqual(mail.outbox[1].to, 'mossplix@mossplix.com')
+        self.assertEqual(mail.outbox[0].body, '<p>This September buy 1 expresso and get 4 on the house!</p>');
+        self.assertEqual(''.join(mail.outbox[1].to), 'mossplix@mossplix.com')
         self.assertEqual(mail.outbox[1].subject, 'Buy 1 get 4 free!')
-        self.assertEqual(mail.outbox[1].body, 'This September buy 1 expresso and 4 on the house!');
+        self.assertEqual(mail.outbox[1].body, '<p>This September buy 1 expresso and get 4 on the house!</p>');
 
 
