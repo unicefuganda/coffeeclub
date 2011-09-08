@@ -1,4 +1,50 @@
 {%  extends 'layout.html' %}
 {%  block content %}
-    
+    <div class="row">
+    <div class="page-header">
+        <h1>Customer Profile</h1>
+    </div>
+    <table>
+        <tr>
+            <th>Ext.</th>
+            <th>{{ customer.name }}</th>
+            <th>Location</th>
+            <th>Standard Drink</th>
+            <th>Milk Type</th>
+            <th>Running Order</th>
+            <th>Which days per week</th>
+            <th>Own cup?</th>
+            <th>Other notes</th>
+        </tr>
+        <tr>
+            <td>1956</td>
+            <td>David</td>
+            <td>2nd</td>
+            <td>double capuccino</td>
+            <td>either</td>
+            <td>No</td>
+            <td>on call</td>
+            <td>No</td>
+            <td>no choc on top</td>
+        </tr>
+    </table>
+    </div>
+    <div class="row">
+    <div class="page-header">
+        <h1>Accounting</h1>
+    </div>
+    <table>
+    <tr>
+        <th>Type of Payment</th>
+        <th>Date of Payment</th>
+        <th>Amount (UGX)</th>
+        <th>Cup1</th>
+        <th>Cup2</th>
+        <th>Cup3</th>
+        <th>Cup4</th>
+        <th>Refill Card given?</th>
+    </tr>
+        
+    </table>
+    </div>
 {%  endblock %}

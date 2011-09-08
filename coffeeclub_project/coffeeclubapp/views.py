@@ -4,7 +4,7 @@ from django.forms import ModelForm
 from .models import *
 from django import forms
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 
 class OrderForm(ModelForm):
     def __init__(self, *args, **kwargs):
