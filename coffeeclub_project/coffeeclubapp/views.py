@@ -5,6 +5,7 @@ from .models import *
 from django import forms
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
+from django.core.validators import validate_email
 
 class OrderForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -26,6 +27,13 @@ class CustomerForm(ModelForm):
     class Meta:
         model=Customer
         exclude=('language','user','user_permissions','reporting_location','preferences')
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        if self._errors and 'email' in self._errors:
+            raise forms.ValidationError("Email already exists")
+        else:
+            return cleaned_data
+    
 
 class PrefrencesForm(ModelForm):
     class Meta:
