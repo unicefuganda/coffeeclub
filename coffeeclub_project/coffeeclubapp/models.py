@@ -38,7 +38,10 @@ class Customer(Contact):
         return Account.objects.filter(owner=self, balance_lt=0)
 
     def bal(self):
-        return self.accounts.all()[0].balance
+        if self.accounts.exists():
+            return self.accounts.all()[0].balance
+        else:
+            return 0
 
     def send_email(self, context={}, type=False):
         recipients = list(self.email)
@@ -51,10 +54,10 @@ class Customer(Contact):
         if message.strip():
             send_mail(subject, message, msg.sender, recipients, fail_silently=False)
 
-    def save(self, force_insert=False, force_update=False, using=False):
+    def save(self,*args,**kwargs):
         if self.preferences is None:
             self.preferences = CustomerPref.objects.create()
-        super(Customer, self).save(force_insert, force_update)
+        super(Customer, self).save(*args, **kwargs)
 
 class CoffeeOrder(models.Model):
     date = models.DateTimeField()
