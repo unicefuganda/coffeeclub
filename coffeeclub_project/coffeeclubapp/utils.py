@@ -9,7 +9,7 @@ def balance_alerts(bal=False, subj=False, signature=False):
     customers = Customer.objects.all()
     for customer in customers:
         if customer.in_negative:
-            bal = bal if bal else Account.objects.filter(owner=customer)[0].balance
+            bal = bal if bal else Account.objects.filter(customer=customer)[0].balance
             subj = subj if subj else 'Outstanding Balance Alert'
             signature = signature if signature else 'Management'
             ctxt = {'subject':subj, 'bal':bal, 'signature':signature}

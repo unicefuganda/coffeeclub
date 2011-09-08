@@ -143,7 +143,7 @@ class ModelTest(TestCase): #pragma: no cover
 #        self.assertEquals(contact.running_order, True)
         self.assertEquals(prefs.own_cup, False)
         self.assertEquals(prefs.notes, 'Add Some Sugar')
-        self.assertEquals(Account.objects.all()[0].owner, contact)
+        self.assertEquals(contact.accounts.count(), 1)
 
     def testCoffeeOrder(self):
 
@@ -260,7 +260,6 @@ class ModelTest(TestCase): #pragma: no cover
         Email.objects.create(subject='{{ subject }}', message='<p>{{ marketing_message }}</p>')
         marketing_email()
         self.assertEqual(len(mail.outbox), 2)
-        print dir(mail.outbox[0].recipients)
         self.assertEqual(''.join(mail.outbox[0].to), 'asseym@gmail.com')
         self.assertEqual(mail.outbox[0].subject, 'Buy 1 get 4 free!')
         self.assertEqual(mail.outbox[0].body, '<p>This September buy 1 expresso and get 4 on the house!</p>');

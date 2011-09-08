@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.signals import post_save
 from rapidsms.models import Contact
 from django.contrib.auth.models import Group
 from script.signals import script_progress_was_completed
@@ -30,20 +31,20 @@ class CustomerPref(models.Model):
     notes = models.TextField(blank=True, null=True)
 
 class Customer(Contact):
-    preferences = models.ForeignKey(CustomerPref, related_name='preferences', null=True)
+    preferences = models.ForeignKey(CustomerPref, null=True)
     extension = models.CharField(max_length=30, null=True, blank=True)
     email = models.EmailField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.preferences is None:
+            self.preferences = CustomerPref.objects.create()
+        super(Customer, self).save(*args, **kwargs)
 
     def in_negative(self):
         return self.accounts.filter(balance_lt=0)
 
     def account_bal(self):
-
-        if self.accounts.exists():
-            return self.accounts.all()[0].balance
-        else:
-            return 0
-
+        return self.accounts.all()[0].balance
 
     def send_email(self, context={}, type=False):
         recipients = list(self.email)
@@ -56,10 +57,10 @@ class Customer(Contact):
         if message.strip():
             send_mail(subject, message, msg.sender, recipients, fail_silently=False)
 
-    def save(self,*args,**kwargs):
-        if self.preferences is None:
-            self.preferences = CustomerPref.objects.create()
-        super(Customer, self).save(*args, **kwargs)
+class Account(models.Model):
+    customer = models.ForeignKey(Customer, related_name="accounts")
+    balance = models.IntegerField(max_length=10, default=0)
+    date_updated = models.DateTimeField(auto_now=True)
 
 class CoffeeOrder(models.Model):
     date = models.DateTimeField()
@@ -68,17 +69,19 @@ class CoffeeOrder(models.Model):
     num_cups = models.IntegerField(max_length=2)
     deliver_to = models.CharField(max_length=100, blank=True, null=True)
 
-class Account(models.Model):
-    owner = models.ForeignKey(Customer, related_name="accounts")
-    balance = models.IntegerField(max_length=10, default=0)
-    date_updated = models.DateTimeField(auto_now=True)
-
 class Email(models.Model):
     email_type_choices = (('alert', 'Balance Alert'), ('marketing', 'Marketing'))
     subject = models.TextField()
     sender = models.EmailField(default='no-reply@uganda.rapidsms.org')
     message = models.TextField()
     email_type = models.CharField(max_length=10, default='alert', choices=email_type_choices, blank=True, null=True)
+
+def create_new_account(sender, **kwargs):
+    if sender == Customer:
+        customer = kwargs['instance']
+        if customer:
+            if not customer.accounts.exists():
+                customer.accounts.create()
 
 def coffee_autoreg(**kwargs):
 
@@ -142,9 +145,7 @@ def coffee_autoreg(**kwargs):
     if notes:
         notes = ' '.join([n.capitalize() for n in notes.lower().split(' ')])
         prefs.notes = notes
-
     prefs.save()
-    Account.objects.create(owner=contact)
 
 def xform_received_handler(sender, **kwargs):
     xform = kwargs['xform']
@@ -177,6 +178,7 @@ def xform_received_handler(sender, **kwargs):
 
 script_progress_was_completed.connect(coffee_autoreg, weak=False)
 xform_received.connect(xform_received_handler, weak=False)
+post_save.connect(create_new_account, sender=Customer, weak=False)
 
 
 
