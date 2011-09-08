@@ -25,7 +25,7 @@ def init_structures(sender, **kwargs):
     global models_created
     global structures_initialized
     models_created.append(sender.__name__)
-    required_models = ['eav.models', 'rapidsms_xforms.models', 'poll.models', 'script.models', 'django.contrib.auth.models']
+    required_models = ['coffeeclubapp.models', 'eav.models', 'rapidsms_xforms.models', 'poll.models', 'script.models', 'django.contrib.auth.models']
     if 'django.contrib.sites' in settings.INSTALLED_APPS:
         required_models.append('django.contrib.sites.models')
     if 'authsites' in settings.INSTALLED_APPS:
@@ -43,8 +43,22 @@ def init_structures(sender, **kwargs):
         structures_initialized = True
 
 def init_groups():
-    for g in ['Waiters', 'T4D', 'Child Protection', 'Wash', 'Education', 'Other Coffee People']:
-        Group.objects.get_or_create(name=g)
+    from coffeeclubapp.models import Department
+    departments = [
+                ('Waiters', 'First Floor'),
+                ('T4D', 'Second Floor'),
+                ('WASH', 'Second Floor'),
+                ('Communications', 'First Floor'),
+                ('Child Protection', 'Forth Floor'),
+                ('Education', 'Forth Floor')
+                ]
+    for grp, location in departments:
+        g, created = Group.objects.get_or_create(name=grp)
+        dep, c = Department.objects.get_or_create(pk=g.pk)
+        dep.floor = location
+        dep.save()
+        g.floor = location
+        g.save()
 
 def init_xforms(sender, **kwargs):
     init_xforms_from_tuples(XFORMS, XFORM_FIELDS)

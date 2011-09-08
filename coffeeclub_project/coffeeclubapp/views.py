@@ -1,50 +1,12 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.forms import ModelForm
 from .models import *
-from django import forms
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
 from uganda_common.utils import ExcelResponse
 from xlrd import open_workbook
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect, HttpResponse
+from forms import CustomerForm, OrderForm, PrefrencesForm
 
-class OrderForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(OrderForm, self).__init__(*args, **kwargs)
-        self.fields['customer'].widget.attrs['class'] = 'autocomplete'
-        self.fields['customer'].help_text="start typing to see available customers"
-        self.fields['coffee_name'].widget.attrs['class'] = 'autocomplete'
-        self.fields['coffee_name'].help_text="start typing to see available Menu Items"
-
-    class Meta:
-        model=CoffeeOrder
-        exclude=('date')
-        fields=('customer','coffee_name','num_cups','deliver_to')
-
-class CustomerForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(CustomerForm, self).__init__(*args, **kwargs)
-        self.fields['groups'].widget.attrs['class'] = 'autocomplete'
-        self.fields['groups'].label="Group"
-        self.fields['groups'].help_text="starty typing to see available groups"
-    class Meta:
-        model=Customer
-        exclude=('language','user','user_permissions','reporting_location','preferences')
-
-class UploadForm(forms.Form):
-    excel_file = forms.FileField(label="Excel File",required=True)
-    def clean(self):
-        excel = self.cleaned_data.get('excel_file',None)
-        if excel and excel.name.rsplit('.')[1] != 'xls':
-                msg=u'Upload valid excel file !!!'
-                self._errors["excel_file"]=ErrorList([msg])
-                return ''
-        return self.cleaned_data
-    
-class PrefrencesForm(ModelForm):
-    class Meta:
-        model=CustomerPref
-        
 def dashboard(request):
     order_form=OrderForm()
     if request.method=='POST':
@@ -138,9 +100,13 @@ def delete_customer(request,customer_id):
         return HttpResponse("Success")
     else:
         return HttpResponse("Failed")
+
 def customer_details(request,customer_pk):
     customer=get_object_or_404(Customer,pk=customer_pk)
-    return render_to_response('coffeeclubapp/customer_detail.html',{'customer':customer},
+    customer_coffee_order = CoffeeOrder.objects.filter(customer__name__exact=customer.name)
+
+    return render_to_response('coffeeclubapp/customer_detail.html',{'customer':customer,
+                                                                    'coffee_order':customer_coffee_order},
                               context_instance=RequestContext(request))
 
 def upload_customers(request):

@@ -108,12 +108,6 @@ class ModelTest(TestCase): #pragma: no cover
         User.objects.get_or_create(username='admin')
         self.backend = Backend.objects.create(name='test')
         self.connection = Connection.objects.create(identity='8675309', backend=self.backend)
-        grp = Group.objects.get(name='T4D')
-        self.department = Department.objects.create(pk=grp.pk)
-        self.department.floor = '2nd Floor'
-        self.department.save()
-        grp.floor = '2nd Floor'
-        grp.save()
         self.expresso = MenuItem.objects.create(name='Expresso', cost=2500)
         self.cappuccino = MenuItem.objects.create(name='Capuccino', cost=2500)
 
@@ -138,7 +132,7 @@ class ModelTest(TestCase): #pragma: no cover
         contact = Customer.objects.all()[0]
         self.assertEquals(contact.name, 'Moses Mugisha')
         self.assertEquals(contact.groups.all()[0].name, 'T4D')
-        self.assertEquals(Department.objects.get(pk=contact.groups.all()[0].pk).floor, '2nd Floor')
+        self.assertEquals(Department.objects.get(pk=contact.groups.all()[0].pk).floor, 'Second Floor')
         self.assertEquals(contact.extension, '1760')
         self.assertEquals(contact.email, 'mossplix@yahoo.com')
         prefs = contact.preferences
@@ -173,7 +167,7 @@ class ModelTest(TestCase): #pragma: no cover
         coffee_order = CoffeeOrder.objects.order_by('-date').filter(customer=contact)[0]
         self.assertEquals(coffee_order.num_cups, 2)
         self.assertEquals(coffee_order.coffee_name, self.expresso)
-        self.assertEquals(Message.objects.all().order_by('-date')[0].text, "2 cup(s) of Expresso coming up shortly! We will deliver to T4D 2nd Floor")
+        self.assertEquals(Message.objects.all().order_by('-date')[0].text, "2 cup(s) of Expresso coming up shortly! We will deliver to T4D Second Floor")
 
         self.fake_incoming('coffee')
         coffee_order = CoffeeOrder.objects.order_by('-date').filter(customer=contact)[0]
