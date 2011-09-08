@@ -3,6 +3,7 @@ Basic tests for coffeeclub app
 """
 from django.test import TestCase
 from django.contrib.auth.models import User, Group
+from django.contrib.sites.models import Site
 from rapidsms.messages.incoming import IncomingMessage
 from rapidsms_xforms.models import *
 from rapidsms_httprouter.models import Message
@@ -17,7 +18,7 @@ from rapidsms_httprouter.router import get_router
 from script.signals import script_progress_was_completed, script_progress
 from poll.management import create_attributes
 from .management import init_groups, init_xforms, init_autoreg
-from .models import MenuItem, CustomerPref, Customer, Order, Account, Department
+from .models import MenuItem, CustomerPref, Customer, CoffeeOrder, Account, Department
 from django.db import connection
 
 class ModelTest(TestCase): #pragma: no cover
@@ -144,6 +145,47 @@ class ModelTest(TestCase): #pragma: no cover
         self.assertEquals(prefs.standard_drink.name, 'Expresso')
         self.assertEquals(prefs.milk_type, 'Cow Milk')
 #        self.assertEquals(contact.running_order, True)
-#        self.assertEquals(contact.days_on_call, 'Mon:Tue:Wed:Thur')
-#        
+        self.assertEquals(prefs.own_cup, False)
+        self.assertEquals(prefs.notes, 'Add Some Sugar')
+        self.assertEquals(Account.objects.all()[0].owner, contact)
+
+    def testCoffeeOrder(self):
+
+        self.fake_incoming('join')
+        self.assertEquals(ScriptProgress.objects.count(), 1)
+        script_prog = ScriptProgress.objects.all()[0]
+        self.assertEquals(script_prog.script.slug, 'coffee_autoreg')
+
+        self.fake_script_dialog(script_prog, self.connection, [\
+            ('coffee_drinker', 'moses mugisha'), \
+            ('coffee_department', 'T4D'), \
+            ('coffee_extension', '1760'), \
+            ('coffee_email', 'mossplix@yahoo.com'), \
+            ('coffee_standard_type', 'xpresso'), \
+            ('coffee_milktype', 'cow milk'), \
+            ('coffee_running_order', 'Mon, Tue, Wednesday, Thur'), \
+            ('coffee_own_cup', 'no'), \
+            ('coffee_other_notes', 'add some sugar'), \
+        ])
+
+        self.fake_incoming('coffee 2')
+        contact = Customer.objects.all()[0]
+        coffee_order = CoffeeOrder.objects.order_by('-date').filter(customer=contact)[0]
+        self.assertEquals(coffee_order.num_cups, 2)
+        self.assertEquals(coffee_order.coffee_name, self.expresso)
+        self.assertEquals(Message.objects.all().order_by('-date')[0].text, "2 cup(s) of Expresso coming up shortly! We will deliver to T4D 2nd Floor")
+
+        self.fake_incoming('coffee')
+        coffee_order = CoffeeOrder.objects.order_by('-date').filter(customer=contact)[0]
+        self.assertEquals(coffee_order.num_cups, 1)
+
+        self.fake_incoming('coffee 2 location Western Conference Room')
+        coffee_order = CoffeeOrder.objects.order_by('-date').filter(customer=contact)[0]
+        self.assertEquals(coffee_order.num_cups, 2)
+        self.assertEquals(Message.objects.all().order_by('-date')[0].text, "2 cup(s) of Expresso coming up shortly! We will deliver to " + coffee_order.deliver_to)
+
+        self.fake_incoming('coffee location Western Conference Room type cappucino')
+        coffee_order = CoffeeOrder.objects.order_by('-date').filter(customer=contact)[0]
+        self.assertEquals(Message.objects.all().order_by('-date')[0].text, str(coffee_order.num_cups) + " cup(s) of " + self.cappuccino.name + " coming up shortly! We will deliver to " + coffee_order.deliver_to)
+
 

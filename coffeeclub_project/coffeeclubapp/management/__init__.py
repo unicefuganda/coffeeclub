@@ -12,8 +12,9 @@ XFORMS = (
 
 XFORM_FIELDS = {
     'coffee':[
-            ('cups', 'int', 'Number of cups of coffee', True),
-            ('coffee_type', 'text', 'Type of coffee', False),
+            ('cups', 'int', 'Number of cups of coffee', False),
+            ('location', 'text', 'Where the coffee should be delivered', False),
+            ('type', 'text', 'Type of coffee', False),
      ],
 }
 
@@ -232,7 +233,7 @@ def init_autoreg(sender, **kwargs):
         ))
         own_cup_poll = Poll.objects.create(
             user=user, \
-            type='yn', \
+            type=Poll.TYPE_TEXT, \
             name='coffee_own_cup',
             question='Do you prefer to use your own personal cup (Yes or No)?', \
             default_response='', \

@@ -86,10 +86,10 @@ INSTALLED_APPS = [
 ]
 
 SMS_APPS = [
+    "rapidsms_xforms",
     "script",
     "coffeeclubapp",
     "poll",
-    "rapidsms_xforms",
 ]
 
 
