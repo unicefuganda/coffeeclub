@@ -17,8 +17,8 @@ from script.models import Script, ScriptProgress, ScriptSession, ScriptResponse
 from rapidsms_httprouter.router import get_router
 from script.signals import script_progress_was_completed, script_progress
 from poll.management import create_attributes
-from .management import init_groups, init_xforms, init_autoreg
-from .models import MenuItem, CustomerPref, Customer, CoffeeOrder, Account, Department, Email
+from .management import init_groups, init_xforms, init_autoreg, init_email_templates
+from .models import MenuItem, CustomerPref, Customer, CoffeeOrder, Account, Department, MessageContent
 from .utils import balance_alerts, marketing_email
 from django.db import connection
 from django.core import mail
@@ -106,6 +106,7 @@ class ModelTest(TestCase): #pragma: no cover
         init_groups()
         init_xforms(None)
         init_autoreg(None)
+#        init_email_templates()
         create_attributes()
         User.objects.get_or_create(username='admin')
         self.backend = Backend.objects.create(name='test')
@@ -206,7 +207,9 @@ class ModelTest(TestCase): #pragma: no cover
         account = contact.accounts.all()[0]
         account.balance = -2500
         account.save()
-        self.fake_script_dialog(script_prog, self.connection, [\
+        conn = Connection.objects.create(identity='9675309', backend=self.backend)
+        self.fake_incoming('join', connection=conn)
+        self.fake_script_dialog(script_prog, conn, [\
             ('coffee_drinker', 'moses mugisha'), \
             ('coffee_department', 'T4D'), \
             ('coffee_extension', '1760'), \
@@ -217,8 +220,7 @@ class ModelTest(TestCase): #pragma: no cover
             ('coffee_own_cup', 'no'), \
             ('coffee_other_notes', 'add some sugar'), \
         ])
-
-        Email.objects.create(subject='{{ subject }}', message='<p>Your coffee account balance is {{ bal }}</p><p>Please Pay up as soon as possible</p><p>{{ signature }}</p>')
+        MessageContent.objects.create(subject='{{ subject }}', message='<p>Your coffee account balance is {{ bal }}</p><p>Please Pay up as soon as possible</p><p>{{ signature }}</p>')
         balance_alerts()
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Outstanding Balance Alert')
@@ -257,7 +259,7 @@ class ModelTest(TestCase): #pragma: no cover
         ])
 
         self.assertEquals(Customer.objects.count(), 2)
-        Email.objects.create(subject='{{ subject }}', message='<p>{{ marketing_message }}</p>')
+        MessageContent.objects.create(subject='{{ subject }}', message='<p>{{ marketing_message }}</p>', type='marketing')
         marketing_email()
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(''.join(mail.outbox[0].to), 'asseym@gmail.com')

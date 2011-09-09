@@ -40,15 +40,15 @@ class Customer(Contact):
             self.preferences = CustomerPref.objects.create()
         super(Customer, self).save(*args, **kwargs)
 
-    def in_negative(self):
-        return self.accounts.filter(balance_lt=0)
+    def negative_bal(self):
+        return self.accounts.all()[0].balance < 0
 
     def account_bal(self):
         return self.accounts.all()[0].balance
 
     def send_email(self, context={}, type=False):
         recipients = list(self.email)
-        msg = Email.objects.filter(email_type=type)[0] if type else Email.objects.filter(email_type='alert')[0]
+        msg = MessageContent.objects.filter(type=type)[0] if type else MessageContent.objects.filter(type='alert')[0]
         subject_template = Template(msg.subject)
         message_template = Template(msg.message)
         ctxt = Context(context)
@@ -57,10 +57,16 @@ class Customer(Contact):
         if message.strip():
             send_mail(subject, message, msg.sender, recipients, fail_silently=False)
 
+    def __unicode__(self):
+        return self.name + ' ' + self.groups.all()[0].name
+
 class Account(models.Model):
     customer = models.ForeignKey(Customer, related_name="accounts")
     balance = models.IntegerField(max_length=10, default=0)
     date_updated = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return self.balance
 
 class CoffeeOrder(models.Model):
     date = models.DateTimeField()
@@ -69,12 +75,12 @@ class CoffeeOrder(models.Model):
     num_cups = models.IntegerField(max_length=2)
     deliver_to = models.CharField(max_length=100, blank=True, null=True)
 
-class Email(models.Model):
+class MessageContent(models.Model):
     email_type_choices = (('alert', 'Balance Alert'), ('marketing', 'Marketing'))
     subject = models.TextField()
     sender = models.EmailField(default='no-reply@uganda.rapidsms.org')
     message = models.TextField()
-    email_type = models.CharField(max_length=10, default='alert', choices=email_type_choices, blank=True, null=True)
+    type = models.CharField(max_length=15, default='alert', choices=email_type_choices, blank=True, null=True)
 
 def create_new_account(sender, **kwargs):
     if sender == Customer:

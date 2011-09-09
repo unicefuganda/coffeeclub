@@ -40,6 +40,7 @@ def init_structures(sender, **kwargs):
         init_groups()
         init_xforms(sender)
         init_autoreg(sender)
+        init_email_templates()
         structures_initialized = True
 
 def init_groups():
@@ -59,6 +60,34 @@ def init_groups():
         dep.save()
         g.floor = location
         g.save()
+
+def init_email_templates():
+    from coffeeclubapp.models import MessageContent
+    subject = '{{ subject }}'
+    message = '{% extends "newsletter/base.html" %}\
+    {% block content %}\
+    <div class="letter_header">{{ subject }}</div>\
+    <div class="letter_body">\
+    Dear {{ customer.name }}\
+    <div class="newsletter_message">\
+    <p>Your coffee account balance is <b>{{ bal }}</b></p><p>Please endevour to clear this outstanding bill as soon as possible</p>\<p></p>\
+    <address><pre>{{ signature }}</pre></address>\
+    </div></div>\
+    {% endblock %}'
+    MessageContent.objects.create(subject=subject, message=message)
+
+    subject = '{{ subject }}'
+    message = '{% extends "newsletter/base.html" %}\
+    {% block content %}\
+    <div class="letter_header">{{ subject }}</div>\
+    <div class="letter_body">\
+    Dear {{ customer.name }}\
+    <div class="newsletter_message">\
+    {{ marketing_message }}\<p></p>\
+    <address><pre>{{ signature }}</pre></address>\
+    </div></div>\
+    {% endblock %}'
+    MessageContent.objects.create(subject=subject, message=message, type='marketing')
 
 def init_xforms(sender, **kwargs):
     init_xforms_from_tuples(XFORMS, XFORM_FIELDS)
