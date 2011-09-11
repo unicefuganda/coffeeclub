@@ -4,7 +4,7 @@
 <!-- extension-->
 <td>{{ object.extension }}</td>
 <!-- location -->
-<td>{{ object.groups.0.name }},{{ object.groups.0.floor }}</td>
+<td>{{ object.groups.all.0.name}}</td>
 <!-- standard drink -->
 <td>{{ object.preferences.standard_drink }}</td>
 <!-- milk type -->
@@ -12,7 +12,7 @@
 <!-- running order -->
 <td>{{ object.preferences.running_order }}</td>
 <!-- Which days per week on call? -->
-<td>{{ object.prefreences.days_on_call }}</td>
+<td>{{ object.preferences.days_on_call }}</td>
 <td>
     {{ object.preferences.own_cup }}
 </td>

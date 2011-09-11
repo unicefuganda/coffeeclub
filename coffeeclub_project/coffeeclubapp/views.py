@@ -66,31 +66,35 @@ def handle_excel_file(file):
                 else:
                     customer.preferences.own_cup=True
                 milk_types=dict(CustomerPref.milk_type_choices)
-                customer.preferences.milk_type=milk_types.get(str(milk_type).strip(),'')
+
+
+                customer.preferences.milk_type=milk_types.get(str(milk_type).strip().lower(),'')
                 customer.email=email
                 customer.preferences.notes=notes
                 customer.preferences.save()
                 customer.save()
                 for row in range(8,worksheet.nrows):
                     try:
-                        account,created=Account.objects.get_or_create(owner=customer)
+                        account,created=Account.objects.get_or_create(customer=customer)
                         old_blc=account.balance
-                        b=float(str(worksheet.cell(row,2).value).replace(',',''))+float(old_blc)
+                        b=float(str(worksheet.cell(row,2).value).replace(',','').strip())+float(old_blc)
                         account.balance=b
                         account.save()
-                        #print account.balance
-                        for v in range(3,7):
-                            date=worksheet.cell(row,v).value
-                            if not date==u"":
-                                try:
-                                    date_st=datetime.datetime.strptime(str(date)+"/11","%d/%m/%y")
-                                    order=CoffeeOrder.objects.create(date=date_st,customer=customer,num_cups=1)
-                                except:
-                                    continue
-                            else:
-                                continue
-                    except:
+                    except ValueError:
                         continue
+                    for v in range(3,7):
+                        date=worksheet.cell(row,v).value
+                        print date
+                        if not date==u"" :
+                            try:
+                                date_st=datetime.datetime.strptime(str(date)+"/11","%d/%m/%y")
+                                order=CoffeeOrder.objects.create(date=date_st,customer=customer,num_cups=1)
+
+                            except ValueError :
+                                continue
+                        else:
+                            continue
+                   
 
 
             else:
@@ -150,7 +154,26 @@ def upload_customers(request):
 
 def export_cusomers(request):
     customers=Customer.objects.all()
-    return ExcelResponse(customers)
+    export_list=[]
+
+    for customer in customers:
+        cus={}
+        cus['name']=customer.name
+        cus['extension']=customer.extension
+        cus['email']=customer.preferences.email
+        if customer.groups.exists():
+            cus['location']=customer.groups.all()[0].name
+        else:
+            cus['location']="N/A"
+        cus['standard_drink']=customer.preferences.standard_drink.name
+        cus['milk_type']=customer.preferences.milk_type
+        cus['running_order']=customer.preferences.running_order
+        cus['days_on_call']=customer.preferences.days_on_call
+        cus['own_cup']=customer.preferences.own_cup
+        cus['notes']=customer.preferences.notes
+        cus['balance']=customer.account_bal()
+        export_list.append(cus)
+    return ExcelResponse(export_list)
 
 
 # management

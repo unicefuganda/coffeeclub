@@ -12,13 +12,13 @@ from django.template import Template, Context
 from django.core.mail import send_mail
 from datetime import datetime
 from django.db.models.signals import post_save
-
+from decimal import Decimal
 class Department(Group):
     floor = models.CharField(max_length=15, blank=True)
 
 class MenuItem(models.Model):
     name = models.CharField(max_length=50, blank=True)
-    cost = models.IntegerField(max_length=10, blank=True, null=True)
+    cost = models.DecimalField(max_digits=10, blank=True, null=True,decimal_places=2)
     def __unicode__(self):
         return self.name
 
@@ -59,8 +59,8 @@ class Customer(Contact):
         if message.strip():
             send_mail(subject, message, msg.sender, recipients, fail_silently=False)
 
-    def __unicode__(self):
-       return self.name + ' ' + self.groups.all()[0].name
+    #def __unicode__(self):
+    #   return self.name + ' ' + lambda self.groups.all():.name
 
 
     def save(self,*args,**kwargs):
@@ -70,30 +70,39 @@ class Customer(Contact):
 
 class Account(models.Model):
     customer = models.ForeignKey(Customer, related_name="accounts")
-    balance = models.IntegerField(max_length=10, default=0)
+    balance = models.DecimalField(max_digits=10, default=0.00,decimal_places=2)
     date_updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return self.balance
+        return str(self.balance)
 
 class CoffeeOrder(models.Model):
-    date = models.DateTimeField(default=datetime.now)
+    date = models.DateTimeField(default=datetime.now())
     customer = models.ForeignKey(Customer, related_name="order")
     coffee_name = models.ForeignKey(MenuItem, blank=True, null=True)
     num_cups = models.IntegerField(max_length=2)
     deliver_to = models.CharField(max_length=100, blank=True, null=True)
     def cost(self):
         try:
-            return self.num_cups*self.coffeee_name*cost
+            if self.coffee_name:
+                return self.num_cups*self.coffee_name.cost
+            else:
+                return self.num_cups*2500.00
         except ValueError:
-            return float(self.cofee_name.cost)
+            return float(self.coffee_name.cost)
 
 #send low balance and update account balance notifications
 def check_balance_handler(sender, **kwargs):
     instance = kwargs['instance']
-    olb_blc= instance.accounts[0].balanace
-    instance.accounts[0].balanace=float(old_blc-instance.cost)
-    instance.save()
+    account=instance.customer.accounts.all()[0]
+    old_blc= account.balance
+    account.balance=Decimal(old_blc)-Decimal(instance.cost())
+    account.save()
+    if account.balance <=0:
+        subject="Dear %s your  coffee credit is 0. Pls come to pay some more! Thanks!"%instance.customer.name
+        content="Dear %s your  coffee credit is 0. Pls come to pay some more! Thanks!"%instance.customer.name
+        EmailAlert.objects.create(content=content,subject=subject,customer=instance.customer)
+
 
 post_save.connect(check_balance_handler, sender=CoffeeOrder)
 
@@ -103,6 +112,15 @@ class MessageContent(models.Model):
     sender = models.EmailField(default='no-reply@uganda.rapidsms.org')
     message = models.TextField()
     type = models.CharField(max_length=15, default='alert', choices=email_type_choices, blank=True, null=True)
+
+
+class EmailAlert(models.Model):
+    subject = models.TextField()
+    sender = models.EmailField(default='no-reply@uganda.rapidsms.org')
+    content = models.TextField()
+    sent=models.BooleanField(default=False)
+    customer=models.ForeignKey(Customer,null=True,blank=True)
+    date_to_send=models.DateTimeField(default=datetime.now())
 
 def create_new_account(sender, **kwargs):
     if sender == Customer:
