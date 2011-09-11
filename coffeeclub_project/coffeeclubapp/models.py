@@ -10,6 +10,8 @@ from rapidsms_xforms.models import XFormField, XForm, XFormSubmission, dl_distan
 import datetime
 from django.template import Template, Context
 from django.core.mail import send_mail
+from datetime import datetime
+from django.db.models.signals import post_save
 
 class Department(Group):
     floor = models.CharField(max_length=15, blank=True)
@@ -31,7 +33,7 @@ class CustomerPref(models.Model):
     notes = models.TextField(blank=True, null=True)
 
 class Customer(Contact):
-    preferences = models.ForeignKey(CustomerPref, null=True)
+    preferences = models.ForeignKey(CustomerPref, related_name='preferences', null=True)
     extension = models.CharField(max_length=30, null=True, blank=True)
     email = models.EmailField(blank=True, null=True)
 
@@ -58,7 +60,13 @@ class Customer(Contact):
             send_mail(subject, message, msg.sender, recipients, fail_silently=False)
 
     def __unicode__(self):
-        return self.name + ' ' + self.groups.all()[0].name
+       return self.name + ' ' + self.groups.all()[0].name
+
+
+    def save(self,*args,**kwargs):
+        if self.preferences is None:
+            self.preferences = CustomerPref.objects.create()
+        super(Customer, self).save(*args, **kwargs)
 
 class Account(models.Model):
     customer = models.ForeignKey(Customer, related_name="accounts")
@@ -69,11 +77,25 @@ class Account(models.Model):
         return self.balance
 
 class CoffeeOrder(models.Model):
-    date = models.DateTimeField()
+    date = models.DateTimeField(default=datetime.now)
     customer = models.ForeignKey(Customer, related_name="order")
     coffee_name = models.ForeignKey(MenuItem, blank=True, null=True)
     num_cups = models.IntegerField(max_length=2)
     deliver_to = models.CharField(max_length=100, blank=True, null=True)
+    def cost(self):
+        try:
+            return self.num_cups*self.coffeee_name*cost
+        except ValueError:
+            return float(self.cofee_name.cost)
+
+#send low balance and update account balance notifications
+def check_balance_handler(sender, **kwargs):
+    instance = kwargs['instance']
+    olb_blc= instance.accounts[0].balanace
+    instance.accounts[0].balanace=float(old_blc-instance.cost)
+    instance.save()
+
+post_save.connect(check_balance_handler, sender=CoffeeOrder)
 
 class MessageContent(models.Model):
     email_type_choices = (('alert', 'Balance Alert'), ('marketing', 'Marketing'))

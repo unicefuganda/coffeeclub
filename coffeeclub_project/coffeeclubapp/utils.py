@@ -4,6 +4,8 @@ Created on Sep 8, 2011
 @author: asseym
 '''
 from coffeeclubapp.models import Customer, Account
+from django.template import loader, Context, Template
+
 
 def balance_alerts(bal=False, subj=False, signature=False):
     customers = Customer.objects.all()
@@ -23,3 +25,8 @@ def marketing_email(subject=False, message=False):
         ctxt = {'customer':customer, 'subject':subject, 'marketing_message':message}
         customer.send_email(ctxt, type='marketing')
 
+def send_template_email(recipients, template, context,subject):
+    t = loader.get_template(template)
+    context.update(dict(recipients=recipients))
+    t.render(Context(context))
+    send_mass_mail(subject, t, 'no-reply@uganda.rapidsms.org', recipients)
