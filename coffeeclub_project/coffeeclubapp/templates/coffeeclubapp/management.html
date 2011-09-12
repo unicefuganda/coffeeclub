@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block page_title %}Management{% endblock %}
+{% block content %}
+<div class="row">
+<div class="page-header">
+    <h1>Management</h1>
+</div>
+    <div class="header">
+        <h2>Coffees</h2>
+    </div>
+<table border="0" class="form">
+    <form action="" method="post" class="form-stacked">
+        {{ menu_item_form.as_table}}
+    </br>
+    <tr>
+    <td></td>
+    <td><input type="submit" class="btn primary" value="Submit"></td>
+    </tr>
+    </form>
+</table>
+</div>
+{% endblock %}
