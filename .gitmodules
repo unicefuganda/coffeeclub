@@ -37,3 +37,6 @@
 [submodule "coffeeclub_project/rapidsms_unregister"]
 	path = coffeeclub_project/rapidsms_unregister
 	url = git://github.com/unicefuganda/rapidsms-unregister.git
+[submodule "coffeeclub_project/django_newsletter"]
+	path = coffeeclub_project/django_newsletter
+	url = git://github.com/dokterbob/django-newsletter.git
