@@ -96,7 +96,7 @@ def check_balance_handler(sender, **kwargs):
     instance = kwargs['instance']
     account=instance.customer.accounts.all()[0]
     old_blc= account.balance
-    account.balance=Decimal(old_blc)-Decimal(instance.cost())
+    account.balance=Decimal(str(old_blc))-Decimal(str(instance.cost()))
     account.save()
     if account.balance <=0:
         subject="Dear %s your  coffee credit is 0. Pls come to pay some more! Thanks!"%instance.customer.name
