@@ -34,3 +34,6 @@
 [submodule "coffeeclub_project/rapidsms_xforms_src"]
 	path = coffeeclub_project/rapidsms_xforms_src
 	url = git://github.com/unicefuganda/rapidsms-xforms.git
+[submodule "coffeeclub_project/rapidsms_unregister"]
+	path = coffeeclub_project/rapidsms_unregister
+	url = git://github.com/unicefuganda/rapidsms-unregister.git
