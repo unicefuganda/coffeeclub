@@ -6,6 +6,7 @@ from uganda_common.utils import ExcelResponse
 from xlrd import open_workbook
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
+import datetime
 
 
 def dashboard(request):
@@ -29,7 +30,7 @@ def handle_excel_file(file):
                 try:
                     extension=worksheet.cell(4,0).value
                     name=worksheet.cell(4,1).value
-                    if str(name).strip()=="":
+                    if name==u"":
                         continue
                     location=worksheet.cell(4,2).value
                     standard_drink=worksheet.cell(4,3).value
@@ -48,9 +49,9 @@ def handle_excel_file(file):
                 floor=""
                 dep=str(dep_list[0]).strip()
                 if(len(dep_list)==2):
-                    floor=dep_list[1][:13]
+                    floor=dep_list[1][:15]
                 if not dep == "":
-                    group,created=Department.objects.get_or_create(name=dep[:13])
+                    group,created=Department.objects.get_or_create(name=dep[:15])
                     group.floor=floor
                     customer.groups.add(group)
                 if str(running_order).strip().lower()=='no':
@@ -65,18 +66,37 @@ def handle_excel_file(file):
                 else:
                     customer.preferences.own_cup=True
                 milk_types=dict(CustomerPref.milk_type_choices)
-                customer.preferences.milk_type=milk_types.get(milk_type,'')
+
+
+                customer.preferences.milk_type=milk_types.get(str(milk_type).strip().lower(),'')
                 customer.email=email
+                customer.preferences.notes=notes
                 customer.preferences.save()
                 customer.save()
                 for row in range(8,worksheet.nrows):
                     try:
-                        account=Account.objects.get_or_create(owner=customer)
+                        account,created=Account.objects.get_or_create(customer=customer)
                         old_blc=account.balance
-                        account.balance=int(str(worksheet.cell(row,2).value).replace(',',''))+old_blc
+                        b=float(str(worksheet.cell(row,2).value).replace(',','').strip())+float(old_blc)
+                        account.balance=b
                         account.save()
-                    except:
+                    except ValueError:
                         continue
+                    for v in range(3,7):
+                        date=worksheet.cell(row,v).value
+                        print date
+                        if not date==u"" :
+                            try:
+                                date_st=datetime.datetime.strptime(str(date)+"/11","%d/%m/%y")
+                                order=CoffeeOrder.objects.create(date=date_st,customer=customer,num_cups=1)
+
+                            except ValueError :
+                                continue
+                        else:
+                            continue
+                   
+
+
             else:
                 continue
 
@@ -134,8 +154,33 @@ def upload_customers(request):
 
 def export_cusomers(request):
     customers=Customer.objects.all()
-    return ExcelResponse(customers)
+    export_list=[]
 
+    for customer in customers:
+        cus={}
+        cus['name']=customer.name
+        cus['extension']=customer.extension
+        cus['email']=customer.preferences.email
+        if customer.groups.exists():
+            cus['location']=customer.groups.all()[0].name
+        else:
+            cus['location']="N/A"
+        cus['standard_drink']=customer.preferences.standard_drink.name
+        cus['milk_type']=customer.preferences.milk_type
+        cus['running_order']=customer.preferences.running_order
+        cus['days_on_call']=customer.preferences.days_on_call
+        cus['own_cup']=customer.preferences.own_cup
+        cus['notes']=customer.preferences.notes
+        cus['balance']=customer.account_bal()
+        export_list.append(cus)
+    return ExcelResponse(export_list)
+
+def scheduled_emails(request):
+    emails=EmailAlerts.objects.filter(sent=False)
+    return render_to_response('coffeeclubapp/notifications.html',dict(sent=sent),
+                              context_instance=RequestContext(request))
+def leader_board(request):
+    return render_to_response("coffeeclubapp/leaderboard.html",{},context_instance=RequestContext(request))
 
 # management
 def management(request):

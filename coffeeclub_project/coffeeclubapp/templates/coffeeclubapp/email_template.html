@@ -1,3 +1,4 @@
+{% load email_tags %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -12,7 +13,22 @@
 <body>
 <div class="container">
     {% block content %}
+        <div class="letter_body">
+    <!-- Anna can override the default salutation -->
+    {% block salutation %}
+    Hi {{ customer.name }}
+    {% endblock %}
+    <br/>
+    <div class="newsletter_message">
+    <p>{% block message %}<h3>{{ subject }}</h3>{{ content }}{% endblock %}</p>
+    <br/>
+    <address>
+        {{ name_of_sender }}<br/>
+        <pre>{{ address_of_sender }}</pre>
+    </address>
+    </div>
+    </div>
     {% endblock %}
 </div>
 </body>
-</html>1
+</html>

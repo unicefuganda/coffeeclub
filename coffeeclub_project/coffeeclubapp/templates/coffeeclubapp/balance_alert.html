@@ -1,0 +1,23 @@
+{% extends "alerts/base.html" %}
+{% block content %}
+    <div class="row">
+    <div class="balance">
+    <p>Hello {{ customer_name }},<br/>
+    You have {{ balance }} left in your account.<br/>
+    {% if debtor %}
+        Your balance is too low, please top up your balance.
+    {% else %}
+        You have maintained your account with the Coffee Club, thank you.<br/>
+        Please click this <a href="newsletter/">link</a> to learn about the benefits of coffee.
+    {% endif %}
+    </p>
+    <address>
+        {{ sender }}
+        <br/>
+        {{ email }}
+        <br/>
+        {{ location }}
+    </address>
+    </div>
+    </div>
+{% endblock %}
