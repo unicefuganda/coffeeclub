@@ -7,10 +7,9 @@ from script.models import ScriptSession
 from script.utils.handling import find_closest_match, find_best_response
 from poll.models import YES_WORDS
 from rapidsms_xforms.models import XFormField, XForm, XFormSubmission, dl_distance, xform_received
-import datetime
 from django.template import Template, Context
 from django.core.mail import send_mail
-from datetime import datetime
+from datetime import datetime,timedelta
 from django.db.models.signals import post_save
 from decimal import Decimal
 class Department(Group):
@@ -114,13 +113,44 @@ class MessageContent(models.Model):
     type = models.CharField(max_length=15, default='alert', choices=email_type_choices, blank=True, null=True)
 
 
+class Badge(models.Model):
+    """Awarded for notable coffee drinking."""
+    GOLD = 1
+    SILVER = 2
+    BRONZE = 3
+    TYPE_CHOICES = (
+        (GOLD,   u'gold'),
+        (SILVER, u'silver'),
+        (BRONZE, u'bronze'),
+    )
+
+    name        = models.CharField(max_length=50)
+    type        = models.SmallIntegerField(choices=TYPE_CHOICES)
+    description = models.CharField(max_length=300)
+    multiple    = models.BooleanField(default=False)
+    # Denormalised data
+    awarded_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ('name',)
+        unique_together = ('name', 'type')
+
+class Award(models.Model):
+    """The awarding of a Badge to a Customer."""
+    customer       = models.ForeignKey(Customer)
+    badge      = models.ForeignKey(Badge)
+    awarded_at = models.DateTimeField(default=datetime.now)
+    notified   = models.BooleanField(default=False)
+
+
+
 class EmailAlert(models.Model):
     subject = models.TextField()
     sender = models.EmailField(default='no-reply@uganda.rapidsms.org')
     content = models.TextField()
     sent=models.BooleanField(default=False)
     customer=models.ForeignKey(Customer,null=True,blank=True)
-    date_to_send=models.DateTimeField(default=datetime.now())
+    date_to_send=models.DateTimeField(default=datetime.now()+timedelta(days=1))
 
 def create_new_account(sender, **kwargs):
     if sender == Customer:
@@ -199,7 +229,7 @@ def xform_received_handler(sender, **kwargs):
     contact = Contact.objects.get(pk=kwargs['message'].connection.contact_id)
 
     if xform.keyword == 'coffee':
-        date = datetime.datetime.now()
+        date = datetime.now()
         customer = Customer.objects.filter(pk=contact.pk)[0]
         if submission.eav.coffee_type:
             coffee_name = find_closest_match(submission.eav.coffee_type, MenuItem.objects)
