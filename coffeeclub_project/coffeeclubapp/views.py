@@ -12,11 +12,12 @@ from decimal import Decimal
 
 def dashboard(request):
     order_form=OrderForm()
+    orders=CoffeeOrder.objects.order_by('-date')[:10]
     if request.method=='POST':
         order_form=OrderForm(request.POST)
         if order_form.is_valid():
             order_form.save()
-    return render_to_response('coffeeclubapp/dashboard.html',{'order_form':order_form},
+    return render_to_response('coffeeclubapp/dashboard.html',{'order_form':order_form,'orders':orders},
     context_instance=RequestContext(request))
 
 def handle_excel_file(file):
@@ -220,4 +221,6 @@ def leaderboard(request):
 
 # management
 def management(request):
-    return render_to_response('coffeeclubapp/management.html',{'menu_item_form':MenuItemForm},context_instance=RequestContext(request))
+    menu_item_form = MenuItemForm()
+    return render_to_response('coffeeclubapp/management.html',{'menu_item_form':menu_item_form},context_instance=RequestContext(request))
+
