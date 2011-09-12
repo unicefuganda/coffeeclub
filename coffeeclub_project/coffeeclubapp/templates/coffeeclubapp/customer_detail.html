@@ -40,8 +40,6 @@
         {% if coffee_order %}
         <table>
         <tr>
-        <th>Type of Payment</th>
-        <th>Date of Payment</th>
         <th>Amount (UGX)</th>
         <th>Cup1</th>
         <th>Cup2</th>
@@ -51,9 +49,12 @@
         </tr>
 
         <tr>
-            <td>
-                {{ coffee_order }}
-            </td>
+
+                {% for order in coffee_order %}
+            <td>Regular</td>
+                <td>{{ order.date }}</td>
+            {% endfor %}
+
         </tr>
         </table>
         {% else %}

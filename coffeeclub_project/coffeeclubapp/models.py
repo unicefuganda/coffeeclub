@@ -7,16 +7,17 @@ from script.models import ScriptSession
 from script.utils.handling import find_closest_match, find_best_response
 from poll.models import YES_WORDS
 from rapidsms_xforms.models import XFormField, XForm, XFormSubmission, dl_distance, xform_received
-import datetime
 from django.template import Template, Context
 from django.core.mail import send_mail
-
+from datetime import datetime,timedelta
+from django.db.models.signals import post_save
+from decimal import Decimal
 class Department(Group):
     floor = models.CharField(max_length=15, blank=True)
 
 class MenuItem(models.Model):
     name = models.CharField(max_length=50, blank=True)
-    cost = models.IntegerField(max_length=10, blank=True, null=True)
+    cost = models.DecimalField(max_digits=10, blank=True, null=True,decimal_places=2)
     def __unicode__(self):
         return self.name
 
@@ -31,7 +32,7 @@ class CustomerPref(models.Model):
     notes = models.TextField(blank=True, null=True)
 
 class Customer(Contact):
-    preferences = models.ForeignKey(CustomerPref, null=True)
+    preferences = models.ForeignKey(CustomerPref, related_name='preferences', null=True)
     extension = models.CharField(max_length=30, null=True, blank=True)
     email = models.EmailField(blank=True, null=True)
 
@@ -40,15 +41,15 @@ class Customer(Contact):
             self.preferences = CustomerPref.objects.create()
         super(Customer, self).save(*args, **kwargs)
 
-    def in_negative(self):
-        return self.accounts.filter(balance_lt=0)
+    def negative_bal(self):
+        return self.accounts.all()[0].balance < 0
 
     def account_bal(self):
         return self.accounts.all()[0].balance
 
     def send_email(self, context={}, type=False):
         recipients = list(self.email)
-        msg = Email.objects.filter(email_type=type)[0] if type else Email.objects.filter(email_type='alert')[0]
+        msg = MessageContent.objects.filter(type=type)[0] if type else MessageContent.objects.filter(type='alert')[0]
         subject_template = Template(msg.subject)
         message_template = Template(msg.message)
         ctxt = Context(context)
@@ -57,24 +58,99 @@ class Customer(Contact):
         if message.strip():
             send_mail(subject, message, msg.sender, recipients, fail_silently=False)
 
+    #def __unicode__(self):
+    #   return self.name + ' ' + lambda self.groups.all():.name
+
+
+    def save(self,*args,**kwargs):
+        if self.preferences is None:
+            self.preferences = CustomerPref.objects.create()
+        super(Customer, self).save(*args, **kwargs)
+
 class Account(models.Model):
     customer = models.ForeignKey(Customer, related_name="accounts")
-    balance = models.IntegerField(max_length=10, default=0)
+    balance = models.DecimalField(max_digits=10, default=0.00,decimal_places=2)
     date_updated = models.DateTimeField(auto_now=True)
 
+    def __unicode__(self):
+        return str(self.balance)
+
 class CoffeeOrder(models.Model):
-    date = models.DateTimeField()
+    date = models.DateTimeField(default=datetime.now())
     customer = models.ForeignKey(Customer, related_name="order")
     coffee_name = models.ForeignKey(MenuItem, blank=True, null=True)
     num_cups = models.IntegerField(max_length=2)
     deliver_to = models.CharField(max_length=100, blank=True, null=True)
+    def cost(self):
+        try:
+            if self.coffee_name:
+                return self.num_cups*self.coffee_name.cost
+            else:
+                return self.num_cups*2500.00
+        except ValueError:
+            return float(self.coffee_name.cost)
 
-class Email(models.Model):
+#send low balance and update account balance notifications
+def check_balance_handler(sender, **kwargs):
+    instance = kwargs['instance']
+    account=instance.customer.accounts.all()[0]
+    old_blc= account.balance
+    account.balance=Decimal(old_blc)-Decimal(instance.cost())
+    account.save()
+    if account.balance <=0:
+        subject="Dear %s your  coffee credit is 0. Pls come to pay some more! Thanks!"%instance.customer.name
+        content="Dear %s your  coffee credit is 0. Pls come to pay some more! Thanks!"%instance.customer.name
+        EmailAlert.objects.create(content=content,subject=subject,customer=instance.customer)
+
+
+post_save.connect(check_balance_handler, sender=CoffeeOrder)
+
+class MessageContent(models.Model):
     email_type_choices = (('alert', 'Balance Alert'), ('marketing', 'Marketing'))
     subject = models.TextField()
     sender = models.EmailField(default='no-reply@uganda.rapidsms.org')
     message = models.TextField()
-    email_type = models.CharField(max_length=10, default='alert', choices=email_type_choices, blank=True, null=True)
+    type = models.CharField(max_length=15, default='alert', choices=email_type_choices, blank=True, null=True)
+
+
+class Badge(models.Model):
+    """Awarded for notable coffee drinking."""
+    GOLD = 1
+    SILVER = 2
+    BRONZE = 3
+    TYPE_CHOICES = (
+        (GOLD,   u'gold'),
+        (SILVER, u'silver'),
+        (BRONZE, u'bronze'),
+    )
+
+    name        = models.CharField(max_length=50)
+    type        = models.SmallIntegerField(choices=TYPE_CHOICES)
+    description = models.CharField(max_length=300)
+    multiple    = models.BooleanField(default=False)
+    # Denormalised data
+    awarded_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ('name',)
+        unique_together = ('name', 'type')
+
+class Award(models.Model):
+    """The awarding of a Badge to a Customer."""
+    customer       = models.ForeignKey(Customer)
+    badge      = models.ForeignKey(Badge)
+    awarded_at = models.DateTimeField(default=datetime.now)
+    notified   = models.BooleanField(default=False)
+
+
+
+class EmailAlert(models.Model):
+    subject = models.TextField()
+    sender = models.EmailField(default='no-reply@uganda.rapidsms.org')
+    content = models.TextField()
+    sent=models.BooleanField(default=False)
+    customer=models.ForeignKey(Customer,null=True,blank=True)
+    date_to_send=models.DateTimeField(default=datetime.now()+timedelta(days=1))
 
 def create_new_account(sender, **kwargs):
     if sender == Customer:
@@ -153,7 +229,7 @@ def xform_received_handler(sender, **kwargs):
     contact = Contact.objects.get(pk=kwargs['message'].connection.contact_id)
 
     if xform.keyword == 'coffee':
-        date = datetime.datetime.now()
+        date = datetime.now()
         customer = Customer.objects.filter(pk=contact.pk)[0]
         if submission.eav.coffee_type:
             coffee_name = find_closest_match(submission.eav.coffee_type, MenuItem.objects)
