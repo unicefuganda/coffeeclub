@@ -21,30 +21,30 @@
 </table>
         </div>
         <div class="span7 columns offset2">
-            <div class="page-header">
-                <h2>Reports</h2>
-
-                <div class="row">
-                   <div class="header">
-                       <h3>Manage customer excel sheets</h3>
-                   </div>
-                    
-                    <div>
-                    <a href="/customers/upload/"><button class="btn">Import Customers From Excel</button></a>
-
-                     </span><a style="margin-top:60px;" href="/customers/export/"><button class="btn">Export Customers
-                    To
-                         Excel</button></a>
-                    </div>
-                    
-                </div>
-                
-                
-            </div>
 
 
             <div class="page-header">
-                <h2>Coffee Club Management</h2>
+                <h2>Coffee Orders</h2>
+                <table class="zebra-striped">
+    <thead>
+<tr><th>Name</th><th>Drink</th><th>#Cups</th></th><th>location</th></tr>
+    </thead>
+{% for order in orders %}
+<tr><td>{{ order.customer.name }}</td>
+    {% if not order.coffee_name %}
+
+    <td>{{ order.customer.preferences.standard_drink }}</td>
+    {% else %}
+     <td>{{ order.coffee_name }}</td>
+    {% endif %}
+    <td>{{ order.num_cups}}</td>
+
+    </td>
+<td>{{ order.customer.groups.all.0.name }}</td>
+</tr>
+
+    {% endfor %}
+</table>
             </div>
             <a href="management/"><button class="btn">Management</button></a>
         </div>
