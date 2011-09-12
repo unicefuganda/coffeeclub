@@ -1,6 +1,6 @@
 from django.forms.models import ModelForm
 from django import forms
-from .models import CoffeeOrder, Customer, CustomerPref, MenuItem
+from .models import CoffeeOrder, Customer, CustomerPref, MenuItem,EmailAlert
 
 class MenuItemForm(ModelForm):
     class Meta:
@@ -56,3 +56,7 @@ class UploadForm(forms.Form):
 class PrefrencesForm(ModelForm):
     class Meta:
         model=CustomerPref
+
+class EmailForm(ModelForm):
+    class Meta:
+        model=EmailAlert

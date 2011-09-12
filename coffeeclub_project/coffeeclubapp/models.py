@@ -83,7 +83,7 @@ class CoffeeOrder(models.Model):
     deliver_to = models.CharField(max_length=100, blank=True, null=True)
     def cost(self):
         try:
-            if self.coffee_name:
+            if self.coffee_name and self.coffee_name.cost:
                 return self.num_cups*self.coffee_name.cost
             else:
                 return self.num_cups*2500.00

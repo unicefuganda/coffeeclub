@@ -7,6 +7,7 @@ from xlrd import open_workbook
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 import datetime
+from decimal import Decimal
 
 
 def dashboard(request):
@@ -78,7 +79,7 @@ def handle_excel_file(file):
                         account,created=Account.objects.get_or_create(customer=customer)
                         old_blc=account.balance
                         b=float(str(worksheet.cell(row,2).value).replace(',','').strip())+float(old_blc)
-                        account.balance=b
+                        account.balance=Decimal(str(b))
                         account.save()
                     except ValueError:
                         continue
@@ -176,10 +177,40 @@ def export_cusomers(request):
     return ExcelResponse(export_list)
 
 def scheduled_emails(request):
-    emails=EmailAlerts.objects.filter(sent=False)
-    return render_to_response('coffeeclubapp/notifications.html',dict(sent=sent),
+    emails=EmailAlert.objects.filter(sent=False)
+    return render_to_response('coffeeclubapp/emails.html',dict(emails=emails),
                               context_instance=RequestContext(request))
-def leader_board(request):
+
+def delete_email(request,email_pk):
+    email=get_object_or_404(EmailAlert,pk=email_pk)
+    if email:
+        email.delete()
+
+    return HttpResponseRedirect("/customers/emails/")
+
+def edit_email(request,email_pk):
+    if email_pk :
+        email=get_object_or_404(EmailAlert,pk=email_pk)
+        email_form=EmailForm(instance=email)
+
+    elif request.method=='POST':
+        email_form=EmailForm(request.POST,instance=EmailAlert())
+        if email_form.is_valid():
+            email=email_form.save()
+            if email:
+                return HttpResponseRedirect("/")
+
+
+    else:
+        email_form=EmailForm()
+
+
+    return render_to_response('coffeeclubapp/edit_email.html',{'email_form':email_form},
+                    context_instance=RequestContext(request))
+
+
+
+def leaderboard(request):
     return render_to_response("coffeeclubapp/leaderboard.html",{},context_instance=RequestContext(request))
 
 # management

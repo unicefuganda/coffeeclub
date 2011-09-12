@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+    {{ block.super }}
+    Scheduled Emails
+{% endblock %}
+{% block content %}
+    <table class="zebra-striped">
+    <thead>
+<tr><th>Name</th><th>Email</th><th>Balance</th><th>Date to send</th><th>Actions</th></tr>
+    </thead>
+{% for email in emails %}
+<tr><td>{{ email.customer.name }}</td>
+    <td>{{ email.customer.prefrences.email }}</td>
+    <td>{{ email.customer.account_bal }}</td>
+     <td>{{ email.date_to_send }}</td>
+    <td><a href="/emails/{{ email.pk }}/edit/">Edit</a> <a href="/emails/{{ email.pk }}/delete/">Delete</a>
+    </td>
+</tr>
+
+    {% endfor %}
+
+</table>
+{% endblock %}
