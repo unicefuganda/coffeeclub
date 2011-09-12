@@ -78,7 +78,7 @@ def handle_excel_file(file):
                     try:
                         account,created=Account.objects.get_or_create(customer=customer)
                         old_blc=account.balance
-                        b=float(str(worksheet.cell(row,2).value).replace(',','').strip())+float(old_blc)
+                        b=float(str(worksheet.cell(row,2).value).replace(',','').strip())+float(str(old_blc))
                         account.balance=Decimal(str(b))
                         account.save()
                     except ValueError:
@@ -161,7 +161,7 @@ def export_cusomers(request):
         cus={}
         cus['name']=customer.name
         cus['extension']=customer.extension
-        cus['email']=customer.preferences.email
+        cus['email']=customer.email
         if customer.groups.exists():
             cus['location']=customer.groups.all()[0].name
         else:
@@ -211,7 +211,9 @@ def edit_email(request,email_pk):
 
 
 def leaderboard(request):
-    return render_to_response("coffeeclubapp/leaderboard.html",{},context_instance=RequestContext(request))
+    leaders=Award.objects.all()
+    return render_to_response("coffeeclubapp/leaderboard.html",dict(leaders=leaders),
+                              context_instance=RequestContext(request))
 
 # management
 def management(request):

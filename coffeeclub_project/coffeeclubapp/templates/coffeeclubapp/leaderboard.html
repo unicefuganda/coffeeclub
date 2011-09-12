@@ -6,6 +6,20 @@
 {% endblock %}
 {% block content %}
 
+     <table class="zebra-striped">
+    <thead>
+<tr><th>Name</th><th>Badge</th><th>Number Of Times Awarded</th></tr>
+    </thead>
+{% for leader in leaders %}
+<tr><td>{{ leader.customer.name }}</td>
+    <td>{{ leader.badge.name }}</td>
+    <td>{{ leader.badge.count}}</td>
+
+    </td>
+</tr>
+
+    {% endfor %}
+</table>
 
 
 {% endblock %}
