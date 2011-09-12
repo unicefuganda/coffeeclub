@@ -17,7 +17,7 @@ class Department(Group):
 
 class MenuItem(models.Model):
     name = models.CharField(max_length=50, blank=True)
-    cost = models.DecimalField(max_digits=10, blank=True, null=True,decimal_places=2)
+    cost = models.DecimalField(max_digits=10, blank=True, null=True,decimal_places=2,default=Decimal('2500'))
     def __unicode__(self):
         return self.name
 
@@ -70,7 +70,7 @@ class Customer(Contact):
 
 class Account(models.Model):
     customer = models.ForeignKey(Customer, related_name="accounts")
-    balance = models.DecimalField(max_digits=10, default=0.00,decimal_places=2)
+    balance = models.DecimalField(max_digits=10, default=Decimal('0.00'),decimal_places=2)
     date_updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
@@ -140,8 +140,10 @@ class Award(models.Model):
     """The awarding of a Badge to a Customer."""
     customer       = models.ForeignKey(Customer)
     badge      = models.ForeignKey(Badge)
-    awarded_at = models.DateTimeField(default=datetime.now)
+    awarded_at = models.DateTimeField(default=datetime.now())
     notified   = models.BooleanField(default=False)
+    def count(self):
+        return Award.objects.filter(customer=self.customer).count()
 
 
 
