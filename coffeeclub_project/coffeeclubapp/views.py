@@ -166,7 +166,10 @@ def export_cusomers(request):
             cus['location']=customer.groups.all()[0].name
         else:
             cus['location']="N/A"
-        cus['standard_drink']=customer.preferences.standard_drink.name
+        if customer.prefrences.standard_drink:
+            cus['standard_drink']=customer.preferences.standard_drink.name
+        else:
+            cus['standard_drink']="N/A"
         cus['milk_type']=customer.preferences.milk_type
         cus['running_order']=customer.preferences.running_order
         cus['days_on_call']=customer.preferences.days_on_call
