@@ -220,4 +220,5 @@ def leaderboard(request):
 
 # management
 def management(request):
-    return render_to_response('coffeeclubapp/management.html',{'menu_item_form':MenuItemForm},context_instance=RequestContext(request))
+    menu_item_form = MenuItemForm(request.POST,instance=MenuItem())
+    return render_to_response('coffeeclubapp/management.html',{'menu_item_form':menu_item_form},context_instance=RequestContext(request))

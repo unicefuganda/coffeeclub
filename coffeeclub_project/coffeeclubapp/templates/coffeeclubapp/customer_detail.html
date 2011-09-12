@@ -41,19 +41,15 @@
         <table>
         <tr>
         <th>Amount (UGX)</th>
-        <th>Cup1</th>
-        <th>Cup2</th>
-        <th>Cup3</th>
-        <th>Cup4</th>
+        <th>Cups</th>
         <th>Refill Card given?</th>
         </tr>
 
         <tr>
-
-                {% for order in coffee_order %}
+        {% for order in coffee_order %}
             <td>Regular</td>
-                <td>{{ order.date }}</td>
-            {% endfor %}
+            <td>{{ order.date }}</td>
+        {% endfor %}
 
         </tr>
         </table>
