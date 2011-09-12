@@ -175,6 +175,12 @@ def export_cusomers(request):
         export_list.append(cus)
     return ExcelResponse(export_list)
 
+def scheduled_emails(request):
+    emails=EmailAlerts.objects.filter(sent=False)
+    return render_to_response('coffeeclubapp/notifications.html',dict(sent=sent),
+                              context_instance=RequestContext(request))
+def leader_board(request):
+    return render_to_response("coffeeclubapp/leaderboard.html",{},context_instance=RequestContext(request))
 
 # management
 def management(request):

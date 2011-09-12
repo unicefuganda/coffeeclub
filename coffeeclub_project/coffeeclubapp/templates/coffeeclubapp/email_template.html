@@ -20,7 +20,7 @@
     {% endblock %}
     <br/>
     <div class="newsletter_message">
-    <p>{% block message %}{% endblock %}</p>
+    <p>{% block message %}<h3>{{ subject }}</h3>{{ content }}{% endblock %}</p>
     <br/>
     <address>
         {{ name_of_sender }}<br/>
