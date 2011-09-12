@@ -48,7 +48,7 @@
 
         {% for order in coffee_order %}
             <tr>
-              <td>{{ order.date }}</td>
+              <td>{{ order.date|date:"M/d/y" }}</td>
             <td>{{ order.cost }}</td>
             <td>{{ order.num_cups }}</td>
             </tr>
