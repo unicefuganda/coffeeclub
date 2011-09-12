@@ -10,6 +10,10 @@
                 <h2>Daily Coffee Order</h2>
             </div>
 <table border="0" class="form">
+			<tr>
+                <td></td>
+                <td>{{ order_form.non_field_errors }}</td>
+            </tr>
             <form action="/" method="Post" class="form-stacked">
                 {{ order_form.as_table}}
                 </br>
