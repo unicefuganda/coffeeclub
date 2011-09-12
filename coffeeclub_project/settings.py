@@ -23,6 +23,7 @@ sys.path.append(os.path.join(filedir, 'rapidsms_status160'))
 sys.path.append(os.path.join(filedir, 'django_eav'))
 sys.path.append(os.path.join(filedir, 'rapidsms_auth'))
 sys.path.append(os.path.join(filedir, 'rapidsms_xforms_src'))
+sys.path.append(os.path.join(filedir, 'rapidsms_unregister'))
 
 # you should configure your database here before doing any real work.
 # see: http://docs.djangoproject.com/en/dev/ref/settings/#databases
@@ -34,6 +35,10 @@ DATABASES = {
         'USER': 'postgres',
     }
 }
+
+OPT_IN_WORDS = ['JOIN']
+OPT_OUT_WORDS = ['QUIT', 'STOP']
+OPT_OUT_CONFIRMATION = 'Thank you for using being a part of the Coffee Club. If you ever want to rejoin the Coffee Club send JOIN to 6767'
 
 # the rapidsms backend configuration is designed to resemble django's
 # database configuration, as a nested dict of (name, configuration).
@@ -74,6 +79,7 @@ INSTALLED_APPS = [
     "rapidsms.contrib.messaging",
     "rapidsms_httprouter",
     "rapidsms_xforms",
+    "unregister",
     "poll",
     "generic",
     "contact",
@@ -87,8 +93,8 @@ INSTALLED_APPS = [
 
 SMS_APPS = [
     "rapidsms_xforms",
-    "script",
     "coffeeclubapp",
+    "script",
     "poll",
 ]
 
