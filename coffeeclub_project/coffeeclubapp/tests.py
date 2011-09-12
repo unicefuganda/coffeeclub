@@ -22,6 +22,7 @@ from .models import MenuItem, CustomerPref, Customer, CoffeeOrder, Account, Depa
 from .utils import balance_alerts, marketing_email
 from django.db import connection
 from django.core import mail
+from unregister.models import Blacklist
 
 class ModelTest(TestCase): #pragma: no cover
 
@@ -133,6 +134,7 @@ class ModelTest(TestCase): #pragma: no cover
         ])
         self.assertEquals(Customer.objects.count(), 1)
         contact = Customer.objects.all()[0]
+        self.assertEquals(contact.active, True)
         self.assertEquals(contact.name, 'Moses Mugisha')
         self.assertEquals(contact.groups.all()[0].name, 'T4D')
         self.assertEquals(Department.objects.get(pk=contact.groups.all()[0].pk).floor, 'Second Floor')
@@ -145,6 +147,31 @@ class ModelTest(TestCase): #pragma: no cover
         self.assertEquals(prefs.own_cup, False)
         self.assertEquals(prefs.notes, 'Add Some Sugar')
         self.assertEquals(contact.accounts.count(), 1)
+
+    def testQuitClub(self):
+        #first join
+        self.fake_incoming('join')
+        self.assertEquals(ScriptProgress.objects.count(), 1)
+        script_prog = ScriptProgress.objects.all()[0]
+        self.assertEquals(script_prog.script.slug, 'coffee_autoreg')
+
+        self.fake_script_dialog(script_prog, self.connection, [\
+            ('coffee_drinker', 'moses mugisha'), \
+            ('coffee_department', 'T4D'), \
+            ('coffee_extension', '1760'), \
+            ('coffee_email', 'mossplix@yahoo.com'), \
+            ('coffee_standard_type', 'expresso'), \
+            ('coffee_milktype', 'cow milk'), \
+            ('coffee_running_order', 'Mon, Tue, Wednesday, Thur'), \
+            ('coffee_own_cup', 'no'), \
+            ('coffee_other_notes', 'add some sugar'), \
+        ])
+        self.assertEquals(Customer.objects.count(), 1)
+
+        #then quit
+        self.fake_incoming('quit')
+        self.assertEquals(Blacklist.objects.all()[0].connection, self.connection)
+        self.assertEquals(Customer.objects.all()[0].active, False)
 
     def testCoffeeOrder(self):
 

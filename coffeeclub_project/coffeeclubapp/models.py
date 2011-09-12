@@ -35,6 +35,7 @@ class Customer(Contact):
     preferences = models.ForeignKey(CustomerPref, related_name='preferences', null=True)
     extension = models.CharField(max_length=30, null=True, blank=True)
     email = models.EmailField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if self.preferences is None:
@@ -179,49 +180,70 @@ def coffee_autoreg(**kwargs):
     own_cup_poll = script.steps.get(order=8).poll
     other_notes_poll = script.steps.get(order=9).poll
 
-    if not connection.contact:
-            connection.contact = Customer.objects.create()
-            connection.save()
-    contact = connection.contact
-
     name = find_best_response(session, name_poll)
-    if name:
-        name = ' '.join([n.capitalize() for n in name.lower().split(' ')])
-        contact.name = name[:100]
-
-    department = find_best_response(session, department_poll)
-    if department:
-        group = find_closest_match(department, Group.objects)
-        if not group:
-            group = Group.objects.get(name='Other Coffee People')
-    contact.groups.add(group)
-
     extension = find_best_response(session, extension_poll)
-    contact.extension = extension
-
+    department = find_best_response(session, department_poll)
     email = find_best_response(session, email_poll)
-    contact.email = email
-    contact.save()
+    if name:
+        name = ' '.join([n.capitalize() for n in name.lower().split()])
 
-    prefs = contact.preferences
-    drink = find_best_response(session, coffee_standard_poll)
-    if drink:
-        prefs.standard_drink = find_closest_match(drink, MenuItem.objects)
+    try:
+        existing_contact = Customer.objects.get(name=name[:100], \
+                                  extension=extension, \
+                                  email=email)
+        if connection.contact:
+            connection.contact.active = True
+        else:
+            existing_contact.active = True
+            existing_contact.save()
+            connection.contact = existing_contact
+            connection.save()
 
-    milktype = find_best_response(session, milktype_poll)
-    if milktype:
-        milktype = ' '.join([n.capitalize() for n in milktype.lower().split(' ')])
-        prefs.milk_type = milktype
+    except Customer.MultipleObjectsReturned:
+        pass
 
-    own_cup = find_best_response(session, own_cup_poll)
-    if own_cup and own_cup in YES_WORDS:
-        prefs.own_cup = True
+    except Customer.DoesNotExist:
 
-    notes = find_best_response(session, other_notes_poll)
-    if notes:
-        notes = ' '.join([n.capitalize() for n in notes.lower().split(' ')])
-        prefs.notes = notes
-    prefs.save()
+        connection.contact = Customer.objects.create()
+        connection.save()
+        contact = connection.contact
+
+        if name:
+            name = ' '.join([n.capitalize() for n in name.lower().split(' ')])
+            contact.name = name[:100]
+
+        if department:
+            group = find_closest_match(department, Group.objects)
+            if not group:
+                group = Group.objects.get(name='Other Coffee People')
+        contact.groups.add(group)
+
+        if extension:
+            contact.extension = extension
+
+        if email:
+            contact.email = email
+        contact.save()
+
+        prefs = contact.preferences
+        drink = find_best_response(session, coffee_standard_poll)
+        if drink:
+            prefs.standard_drink = find_closest_match(drink, MenuItem.objects)
+
+        milktype = find_best_response(session, milktype_poll)
+        if milktype:
+            milktype = ' '.join([n.capitalize() for n in milktype.lower().split(' ')])
+            prefs.milk_type = milktype
+
+        own_cup = find_best_response(session, own_cup_poll)
+        if own_cup and own_cup in YES_WORDS:
+            prefs.own_cup = True
+
+        notes = find_best_response(session, other_notes_poll)
+        if notes:
+            notes = ' '.join([n.capitalize() for n in notes.lower().split(' ')])
+            prefs.notes = notes
+        prefs.save()
 
 def xform_received_handler(sender, **kwargs):
     xform = kwargs['xform']
