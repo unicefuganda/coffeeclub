@@ -137,7 +137,7 @@ def delete_customer(request,customer_id):
 
 def customer_details(request,customer_pk):
     customer=get_object_or_404(Customer,pk=customer_pk)
-    customer_coffee_order = CoffeeOrder.objects.filter(customer__name__exact=customer.name)
+    customer_coffee_order = CoffeeOrder.objects.filter(customer__name__exact=customer.name)[:10]
 
     return render_to_response('coffeeclubapp/customer_detail.html',{'customer':customer,
                                                                     'coffee_order':customer_coffee_order},

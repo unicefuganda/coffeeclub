@@ -40,18 +40,20 @@
         {% if coffee_order %}
         <table>
         <tr>
+            <th>Date</th>
         <th>Amount (UGX)</th>
         <th>Cups</th>
-        <th>Refill Card given?</th>
         </tr>
 
-        <tr>
+
         {% for order in coffee_order %}
-            <td>Regular</td>
-            <td>{{ order.date }}</td>
+            <tr>
+              <td>{{ order.date }}</td>
+            <td>{{ order.cost }}</td>
+            <td>{{ order.num_cups }}</td>
+            </tr>
         {% endfor %}
 
-        </tr>
         </table>
         {% else %}
             <p class="orange">There are no orders yet</p>
