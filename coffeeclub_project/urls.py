@@ -5,6 +5,7 @@ from django.conf import settings
 from generic.views import generic, generic_row
 from generic.sorters import SimpleSorter
 from coffeeclubapp.models import Customer
+from django.contrib.auth.models import Permission
 
 from django.contrib import admin
 admin.autodiscover()
@@ -43,6 +44,9 @@ urlpatterns = patterns('',
           url(r'^emails/(?P<email_pk>\d+)/edit/', edit_email, name="edit_email"),
            url(r'^emails/(?P<email_pk>\d+)/new/', edit_email, name="new_email"),
         url(r'^emails/(?P<email_pk>\d+)/delete/', delete_email, name="delete_email"),
+        url(r'^test/$', generic, {
+            'model':Permission,
+        }),
         url(r'^customers/$', generic, {
         'model':Customer,
         'queryset':Customer.objects.all(),
