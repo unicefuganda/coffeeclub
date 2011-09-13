@@ -13,13 +13,13 @@ from generic.urls import urlpatterns as generic_urls
 
 urlpatterns = patterns('',
 
-        url(r'^$', dashboard ,name="coffee-dashboard"),
+        url(r'^$', dashboard , name="coffee-dashboard"),
         url(r'^account/', include('rapidsms.urls.login_logout')),
         url('^accounts/login', 'rapidsms.views.login'),
         url('^accounts/logout', 'rapidsms.views.logout'),
 
-        url(r'^admin/',include(admin.site.urls)),
-        
+        url(r'^admin/', include(admin.site.urls)),
+
         # RapidSMS contrib app URLs
         (r'^ajax/', include('rapidsms.contrib.ajax.urls')),
         (r'^export/', include('rapidsms.contrib.export.urls')),
@@ -29,19 +29,20 @@ urlpatterns = patterns('',
         (r'^registration/', include('auth.urls')),
         (r'^scheduler/', include('rapidsms.contrib.scheduler.urls')),
 
-        url(r'^management/',management,name="management_dashboard"),
+        url(r'^management/', management, name="management_dashboard"),
         (r'^polls/', include('poll.urls')),
-        url(r'^customers/(?P<customer_pk>\d+)/edit/',edit_customer,name="edit_customer"),
-        url(r'^customers/(?P<customer_pk>\d+)/delete/',delete_customer,name="delete_customer"),
-         url(r'^customers/(?P<customer_pk>\d+)/view/',customer_details,name="view_customer"),
-        url(r'^customers/new/',edit_customer,name="new_customer"),
-        url(r'^customers/upload/',upload_customers,name="upload_customers"),
-        url(r'^customers/export/',export_cusomers,name="export_customers"),
-         url(r'^customers/leaderboard/',leaderboard,name="leaderboard"),
-         url(r'^customers/emails/',scheduled_emails,name="emails"),
-          url(r'^emails/(?P<email_pk>\d+)/edit/',edit_email,name="edit_email"),
-           url(r'^emails/(?P<email_pk>\d+)/new/',edit_email,name="new_email"),
-        url(r'^emails/(?P<email_pk>\d+)/delete/',delete_email,name="delete_email"),
+        url(r'^customers/(?P<customer_pk>\d+)/edit/', edit_customer, name="edit_customer"),
+        url(r'^customers/(?P<customer_pk>\d+)/delete/', delete_customer, name="delete_customer"),
+         url(r'^customers/(?P<customer_pk>\d+)/view/', customer_details, name="view_customer"),
+        url(r'^customers/new/', edit_customer, name="new_customer"),
+        url(r'^customers/upload/', upload_customers, name="upload_customers"),
+        url(r'^customers/export/', export_cusomers, name="export_customers"),
+         url(r'^customers/leaderboard/', leaderboard, name="leaderboard"),
+        url(r'^emails/compose/', compose_newsletter, name="compose-newsletter"),
+         url(r'^customers/emails/', scheduled_emails, name="emails"),
+          url(r'^emails/(?P<email_pk>\d+)/edit/', edit_email, name="edit_email"),
+           url(r'^emails/(?P<email_pk>\d+)/new/', edit_email, name="new_email"),
+        url(r'^emails/(?P<email_pk>\d+)/delete/', delete_email, name="delete_email"),
         url(r'^customers/$', generic, {
         'model':Customer,
         'queryset':Customer.objects.all(),
@@ -62,10 +63,10 @@ urlpatterns = patterns('',
                  ('Days/Week', False, '', None,),
                  ('Own Cup', False, '', None,),
                  ('Notes', False, '', None,),
-                 ('Balance', True, 'accounts__balance',  SimpleSorter(),),
+                 ('Balance', True, 'accounts__balance', SimpleSorter(),),
                  ],
     }, name="poll_dashboard"),
-        ) + router_urls  + generic_urls 
+        ) + router_urls + generic_urls
 
 
 if settings.DEBUG:

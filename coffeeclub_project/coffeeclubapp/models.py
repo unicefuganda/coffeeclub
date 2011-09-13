@@ -9,7 +9,7 @@ from poll.models import YES_WORDS
 from rapidsms_xforms.models import XFormField, XForm, XFormSubmission, dl_distance, xform_received
 from django.template import Template, Context
 from django.core.mail import send_mail
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 from django.db.models.signals import post_save
 from decimal import Decimal
 class Department(Group):
@@ -17,7 +17,7 @@ class Department(Group):
 
 class MenuItem(models.Model):
     name = models.CharField(max_length=50, blank=True)
-    cost = models.DecimalField(max_digits=10, blank=True, null=True,decimal_places=2,default=Decimal('2500'))
+    cost = models.DecimalField(max_digits=10, blank=True, null=True, decimal_places=2, default=Decimal('2500'))
     def __unicode__(self):
         return self.name
 
@@ -63,14 +63,14 @@ class Customer(Contact):
     #   return self.name + ' ' + lambda self.groups.all():.name
 
 
-    def save(self,*args,**kwargs):
+    def save(self, *args, **kwargs):
         if self.preferences is None:
             self.preferences = CustomerPref.objects.create()
         super(Customer, self).save(*args, **kwargs)
 
 class Account(models.Model):
     customer = models.ForeignKey(Customer, related_name="accounts")
-    balance = models.DecimalField(max_digits=10, default=Decimal('0.00'),decimal_places=2)
+    balance = models.DecimalField(max_digits=10, default=Decimal('0.00'), decimal_places=2)
     date_updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
@@ -85,26 +85,26 @@ class CoffeeOrder(models.Model):
     def cost(self):
         try:
             if self.coffee_name and self.coffee_name.cost:
-                return self.num_cups*self.coffee_name.cost
+                return self.num_cups * self.coffee_name.cost
             else:
-                return self.num_cups*2500.00
+                return self.num_cups * 2500.00
         except ValueError:
             return float(self.coffee_name.cost)
 
 #send low balance and update account balance notifications
 def check_balance_handler(sender, **kwargs):
     instance = kwargs['instance']
-    account=instance.customer.accounts.all()[0]
-    old_blc= account.balance
-    account.balance=Decimal(str(old_blc))-Decimal(str(instance.cost()))
+    account = instance.customer.accounts.all()[0]
+    old_blc = account.balance
+    account.balance = Decimal(str(old_blc)) - Decimal(str(instance.cost()))
     account.save()
-    if account.balance <=0:
-        subject="Dear %s your  coffee credit is 0. Pls come to pay some more! Thanks!"%instance.customer.name
-        content="Dear %s your  coffee credit is 0. Pls come to pay some more! Thanks!"%instance.customer.name
-        EmailAlert.objects.create(content=content,subject=subject,customer=instance.customer)
+    if account.balance <= 0:
+        subject = "Dear %s your  coffee credit is 0. Pls come to pay some more! Thanks!" % instance.customer.name
+        content = "Dear %s your  coffee credit is 0. Pls come to pay some more! Thanks!" % instance.customer.name
+        EmailAlert.objects.create(content=content, subject=subject, customer=instance.customer)
 
 
-post_save.connect(check_balance_handler, sender=CoffeeOrder)
+#post_save.connect(check_balance_handler, sender=CoffeeOrder)
 
 class MessageContent(models.Model):
     email_type_choices = (('alert', 'Balance Alert'), ('marketing', 'Marketing'))
@@ -120,15 +120,15 @@ class Badge(models.Model):
     SILVER = 2
     BRONZE = 3
     TYPE_CHOICES = (
-        (GOLD,   u'gold'),
+        (GOLD, u'gold'),
         (SILVER, u'silver'),
         (BRONZE, u'bronze'),
     )
 
-    name        = models.CharField(max_length=50)
-    type        = models.SmallIntegerField(choices=TYPE_CHOICES)
+    name = models.CharField(max_length=50)
+    type = models.SmallIntegerField(choices=TYPE_CHOICES)
     description = models.CharField(max_length=300)
-    multiple    = models.BooleanField(default=False)
+    multiple = models.BooleanField(default=False)
     # Denormalised data
     awarded_count = models.PositiveIntegerField(default=0)
 
@@ -138,10 +138,10 @@ class Badge(models.Model):
 
 class Award(models.Model):
     """The awarding of a Badge to a Customer."""
-    customer       = models.ForeignKey(Customer)
-    badge      = models.ForeignKey(Badge)
+    customer = models.ForeignKey(Customer)
+    badge = models.ForeignKey(Badge)
     awarded_at = models.DateTimeField(default=datetime.now())
-    notified   = models.BooleanField(default=False)
+    notified = models.BooleanField(default=False)
     def count(self):
         return Award.objects.filter(customer=self.customer).count()
 
@@ -151,9 +151,9 @@ class EmailAlert(models.Model):
     subject = models.TextField()
     sender = models.EmailField(default='no-reply@uganda.rapidsms.org')
     content = models.TextField()
-    sent=models.BooleanField(default=False)
-    customer=models.ForeignKey(Customer,null=True,blank=True)
-    date_to_send=models.DateTimeField(default=datetime.now()+timedelta(days=1))
+    sent = models.BooleanField(default=False)
+    customer = models.ForeignKey(Customer, null=True, blank=True)
+    date_to_send = models.DateTimeField(default=datetime.now() + timedelta(days=1))
 
 def create_new_account(sender, **kwargs):
     if sender == Customer:
