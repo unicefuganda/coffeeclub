@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block page_title %}
+    {{ block.super }}
+    Compose Newsletter
+{% endblock %}
+{% block content %}
+    <table >
+<form method="Post" action="{% url coffeeclubapp.views.compose_newsletter %}">
+    {{ email_form.as_table }}
+    <tr><td><input type="submit" value="Send" class="primary btn"></td></tr>
+</form>
+
+</table>
+{% endblock %}
